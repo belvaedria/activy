@@ -13,7 +13,7 @@
                 <x-application-logo class="h-8 w-8" />
             </span>
             <span>
-                <span class="block text-lg font-bold leading-5 text-white">Actify</span>
+                <span class="block text-lg font-bold leading-5 text-white">Activy</span>
                 <span class="text-xs font-medium text-slate-300">Daily Activity Tracker</span>
             </span>
         </a>
@@ -83,7 +83,7 @@
                     <x-application-logo class="h-7 w-7" />
                 </span>
                 <span>
-                    <span class="block text-base font-bold leading-5 text-white">Actify</span>
+                    <span class="block text-base font-bold leading-5 text-white">Activy</span>
                     <span class="text-xs text-slate-300">Daily Activity Tracker</span>
                 </span>
             </a>

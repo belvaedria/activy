@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Actify</title>
+        <title>Activy</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
@@ -21,7 +21,7 @@
                                 <x-application-logo class="h-10 w-10" />
                             </span>
                             <span>
-                                <span class="block text-3xl font-bold leading-8 text-emerald-700">Actify</span>
+                                <span class="block text-3xl font-bold leading-8 text-emerald-700">Activy</span>
                                 <span class="text-sm font-medium text-slate-500">Daily Activity Tracker</span>
                             </span>
                         </a>

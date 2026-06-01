@@ -152,7 +152,7 @@
                             </tr>
 
                             <tr>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Mengerjakan UI Actify</td>
+                                <td class="px-4 py-3 font-semibold text-slate-900">Mengerjakan UI Activy</td>
                                 <td class="px-4 py-3">
                                     <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Produktif</span>
                                 </td>

@@ -4,7 +4,7 @@
             <span class="actify-brand-mark h-16 w-16 text-emerald-700">
                 <x-application-logo class="h-11 w-11" />
             </span>
-            <span class="mt-3 text-3xl font-bold leading-tight text-emerald-700">Actify</span>
+            <span class="mt-3 text-3xl font-bold leading-tight text-emerald-700">Activy</span>
             <span class="text-sm font-medium text-slate-500">Daily Activity Tracker</span>
         </a>
 
