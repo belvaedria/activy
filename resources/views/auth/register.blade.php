@@ -1,52 +1,59 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <div class="text-center">
+        <a href="/" class="mx-auto flex w-fit flex-col items-center">
+            <span class="actify-brand-mark h-16 w-16 text-emerald-700">
+                <x-application-logo class="h-11 w-11" />
+            </span>
+            <span class="mt-3 text-3xl font-bold leading-tight text-emerald-700">Actify</span>
+            <span class="text-sm font-medium text-slate-500">Daily Activity Tracker</span>
+        </a>
+
+        <h1 class="mt-7 text-xl font-bold text-slate-950">Register</h1>
+        <p class="mt-1 text-sm text-slate-500">Buat akun mahasiswa untuk mulai tracking aktivitas.</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}" class="mt-6 space-y-5">
         @csrf
 
-        <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <label for="name" class="actify-label">Nama</label>
+            <input id="name" class="actify-input" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Nama lengkap">
+            @if ($errors->get('name'))
+                <div class="actify-error">{{ $errors->first('name') }}</div>
+            @endif
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div>
+            <label for="email" class="actify-label">Email</label>
+            <input id="email" class="actify-input" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Email aktif">
+            @if ($errors->get('email'))
+                <div class="actify-error">{{ $errors->first('email') }}</div>
+            @endif
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div>
+            <label for="password" class="actify-label">Password</label>
+            <input id="password" class="actify-input" type="password" name="password" required autocomplete="new-password" placeholder="Minimal 8 karakter">
+            @if ($errors->get('password'))
+                <div class="actify-error">{{ $errors->first('password') }}</div>
+            @endif
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div>
+            <label for="password_confirmation" class="actify-label">Konfirmasi Password</label>
+            <input id="password_confirmation" class="actify-input" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Ulangi password">
+            @if ($errors->get('password_confirmation'))
+                <div class="actify-error">{{ $errors->first('password_confirmation') }}</div>
+            @endif
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="actify-btn actify-btn-primary w-full">
+            Register
+        </button>
     </form>
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+        Sudah punya akun?
+        <a href="{{ route('login') }}" class="font-semibold text-emerald-700 hover:text-emerald-800">Login</a>
+    </p>
 </x-guest-layout>

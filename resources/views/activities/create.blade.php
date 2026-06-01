@@ -1,52 +1,77 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Tambah Aktivitas Baru
-        </h2>
+        <h2 class="text-lg font-bold leading-tight text-slate-950">Tambah Aktivitas</h2>
+        <p class="mt-1 text-sm text-slate-500">Isi aktivitas baru yang ingin dicatat.</p>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" style="padding: 20px;">
-                
-                <form action="{{ route('activities.store') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px; max-width: 400px;">
-                    @csrf
-                    
-                    <div>
-                        <label>Nama Aktivitas</label><br>
-                        <input type="text" name="nama_aktivitas" required style="width: 100%;">
-                    </div>
-
-                    <div>
-                        <label>Kategori</label><br>
-                        <select name="kategori" required style="width: 100%;">
-                            <option value="Produktif">Produktif</option>
-                            <option value="Sehat">Sehat</option>
-                            <option value="Personal">Personal</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label>Tanggal</label><br>
-                        <input type="date" name="tanggal" required style="width: 100%;">
-                    </div>
-
-                    <div>
-                        <label>Durasi (Jam)</label><br>
-                        <input type="number" step="0.1" name="durasi" required style="width: 100%;">
-                    </div>
-
-                    <div>
-                        <label>Deskripsi (Opsional)</label><br>
-                        <textarea name="deskripsi" style="width: 100%;"></textarea>
-                    </div>
-
-                    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer;">
-                        Simpan Aktivitas
-                    </button>
-                </form>
-
+    <div class="actify-page">
+        <section class="actify-panel p-5 sm:p-6">
+            <div class="mb-6 border-b border-slate-200 pb-4">
+                <h1 class="text-xl font-bold text-slate-950">Tambah Aktivitas Baru</h1>
+                <p class="mt-1 text-sm text-slate-500">Data akan tersimpan ke backend yang sudah berjalan.</p>
             </div>
-        </div>
+
+            <form action="{{ route('activities.store') }}" method="POST" class="space-y-5">
+                @csrf
+
+                <div>
+                    <label for="nama_aktivitas" class="actify-label">Nama Aktivitas</label>
+                    <input id="nama_aktivitas" type="text" name="nama_aktivitas" value="{{ old('nama_aktivitas') }}" required class="actify-input" placeholder="Contoh: Belajar Basis Data">
+                    @error('nama_aktivitas')
+                        <p class="actify-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2">
+                    <div>
+                        <label for="kategori" class="actify-label">Kategori</label>
+                        <select id="kategori" name="kategori" required class="actify-input">
+                            <option value="" disabled {{ old('kategori') ? '' : 'selected' }}>Pilih kategori</option>
+                            <option value="Produktif" {{ old('kategori') === 'Produktif' ? 'selected' : '' }}>Produktif</option>
+                            <option value="Sehat" {{ old('kategori') === 'Sehat' ? 'selected' : '' }}>Sehat</option>
+                            <option value="Personal" {{ old('kategori') === 'Personal' ? 'selected' : '' }}>Personal</option>
+                        </select>
+                        @error('kategori')
+                            <p class="actify-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="tanggal" class="actify-label">Tanggal</label>
+                        <input id="tanggal" type="date" name="tanggal" value="{{ old('tanggal') }}" required class="actify-input">
+                        @error('tanggal')
+                            <p class="actify-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label for="durasi" class="actify-label">Durasi (Jam)</label>
+                    <input id="durasi" type="number" step="0.1" min="0" name="durasi" value="{{ old('durasi') }}" required class="actify-input" placeholder="Contoh: 1.5">
+                    @error('durasi')
+                        <p class="actify-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="deskripsi" class="actify-label">Deskripsi</label>
+                    <textarea id="deskripsi" name="deskripsi" rows="4" class="actify-input" placeholder="Deskripsi singkat aktivitas (opsional)">{{ old('deskripsi') }}</textarea>
+                    @error('deskripsi')
+                        <p class="actify-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+                    <button type="reset" class="actify-btn actify-btn-secondary">Reset</button>
+                    <button type="submit" class="actify-btn actify-btn-primary">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
+                            <path d="M17 21v-8H7v8M7 3v5h8"/>
+                        </svg>
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </section>
     </div>
 </x-app-layout>

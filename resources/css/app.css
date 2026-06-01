@@ -1,3 +1,163 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --actify-bg: #f4faf7;
+        --actify-surface: #ffffff;
+        --actify-border: #dce8e2;
+        --actify-text: #0f172a;
+        --actify-muted: #64748b;
+        --actify-green: #149653;
+        --actify-green-dark: #0f7a43;
+        --actify-navy: #08284a;
+        --actify-navy-dark: #061d37;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: var(--actify-bg);
+        color: var(--actify-text);
+    }
+
+    ::selection {
+        background: rgba(20, 150, 83, 0.18);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .actify-brand-mark {
+        @apply inline-flex items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700;
+    }
+
+    .actify-panel {
+        @apply rounded-lg border border-slate-200 bg-white shadow-sm;
+    }
+
+    .actify-soft-panel {
+        @apply rounded-lg border border-emerald-100 bg-emerald-50/40;
+    }
+
+    .actify-page {
+        @apply mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-7;
+    }
+
+    .actify-title {
+        @apply text-xl font-bold leading-tight text-slate-950 sm:text-2xl;
+    }
+
+    .actify-subtitle {
+        @apply mt-1 text-sm leading-6 text-slate-500;
+    }
+
+    .actify-sidebar {
+        background: linear-gradient(180deg, var(--actify-navy) 0%, var(--actify-navy-dark) 100%);
+        @apply fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-white/10 px-4 py-5 text-white lg:flex;
+    }
+
+    .actify-mobile-bar {
+        background: linear-gradient(90deg, var(--actify-navy) 0%, var(--actify-navy-dark) 100%);
+        @apply sticky top-0 z-40 border-b border-white/10 px-4 py-3 text-white shadow-sm lg:hidden;
+    }
+
+    .actify-nav-link {
+        @apply flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white;
+    }
+
+    .actify-nav-link-active {
+        @apply bg-emerald-500 text-white shadow-sm shadow-emerald-950/20 hover:bg-emerald-500;
+    }
+
+    .actify-nav-icon {
+        @apply h-4 w-4 shrink-0;
+    }
+
+    .actify-card {
+        @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm;
+    }
+
+    .actify-stat {
+        @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm;
+    }
+
+    .actify-stat-icon {
+        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-lg;
+    }
+
+    .actify-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .actify-btn-primary {
+        @apply border-emerald-700 bg-emerald-700 text-white hover:bg-emerald-800;
+    }
+
+    .actify-btn-secondary {
+        @apply border-slate-200 bg-white text-slate-700 hover:bg-slate-50;
+    }
+
+    .actify-btn-danger {
+        @apply border-red-200 bg-red-50 text-red-700 hover:bg-red-100;
+    }
+
+    .actify-btn-blue {
+        @apply border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100;
+    }
+
+    .actify-label {
+        @apply mb-1.5 block text-sm font-semibold text-slate-700;
+    }
+
+    .actify-input {
+        @apply w-full rounded-md border-slate-200 bg-white text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-500;
+    }
+
+    .actify-helper {
+        @apply mt-1.5 text-xs text-slate-500;
+    }
+
+    .actify-error {
+        @apply mt-1.5 text-xs font-medium text-red-600;
+    }
+
+    .actify-table {
+        @apply min-w-full divide-y divide-slate-200 text-sm;
+    }
+
+    .actify-table thead {
+        @apply bg-slate-50 text-left text-xs font-bold uppercase text-slate-500;
+    }
+
+    .actify-table th,
+    .actify-table td {
+        @apply whitespace-nowrap px-4 py-3;
+    }
+
+    .actify-table tbody {
+        @apply divide-y divide-slate-100 bg-white text-slate-700;
+    }
+
+    .actify-chip {
+        @apply inline-flex items-center rounded-md border px-2 py-1 text-xs font-semibold;
+    }
+
+    .actify-chip-productif {
+        @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+    }
+
+    .actify-chip-sehat {
+        @apply border-blue-200 bg-blue-50 text-blue-700;
+    }
+
+    .actify-chip-personal {
+        @apply border-amber-200 bg-amber-50 text-amber-700;
+    }
+}

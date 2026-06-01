@@ -13,6 +13,9 @@ Route::middleware('auth')->group(function () {
 
     // Menampilkan daftar aktivitas
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
+
+    // Menampilkan halaman rekapitulasi
+    Route::get('/rekapitulasi', [ActivityController::class, 'recap'])->name('activities.recap');
     
     // Menghapus aktivitas
     Route::delete('/activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');

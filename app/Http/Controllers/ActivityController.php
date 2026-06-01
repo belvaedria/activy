@@ -16,6 +16,13 @@ class ActivityController extends Controller
         return view('activities.index', compact('activities'));
     }
 
+    public function recap()
+    {
+        $activities = Activity::orderBy('tanggal', 'desc')->get();
+
+        return view('activities.recap', compact('activities'));
+    }
+
     public function destroy($id)
     {
         $activity = Activity::findOrFail($id);
