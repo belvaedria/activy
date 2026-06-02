@@ -14,6 +14,7 @@ class Activity extends Model
     // Tentukan field apa saja yang boleh diisi (berdasarkan UI kamu)
     protected $fillable = [
         'user_id',
+        'plan_id',
         'nama_aktivitas',
         'kategori',
         'tanggal',

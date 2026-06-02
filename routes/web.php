@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\PlanController;
 
 Route::middleware('auth')->group(function () {
     // Route untuk menampilkan halaman form
@@ -20,9 +21,24 @@ Route::middleware('auth')->group(function () {
     // Menghapus aktivitas
     Route::delete('/activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');
     
-    // (Opsional untuk nanti) Route untuk edit
+    // Route untuk edit
     Route::get('/activities/{id}/edit', [ActivityController::class, 'edit'])->name('activities.edit');
     Route::put('/activities/{id}', [ActivityController::class, 'update'])->name('activities.update');
+
+    Route::get('/plans', [PlanController::class, 'index'])
+        ->name('plans.index');
+
+    Route::post('/plans', [PlanController::class, 'store'])
+        ->name('plans.store');
+
+    Route::delete('/plans/{id}', [PlanController::class, 'destroy'])
+        ->name('plans.destroy');
+
+    Route::get('/plans/{id}/edit', [PlanController::class, 'edit'])
+        ->name('plans.edit');
+
+    Route::put('/plans/{id}', [PlanController::class, 'update'])
+        ->name('plans.update');
 });
 
 Route::get('/', function () {

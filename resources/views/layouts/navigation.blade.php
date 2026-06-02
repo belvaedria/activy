@@ -1,6 +1,6 @@
 @php
     $dashboardActive = request()->routeIs('dashboard');
-    $createActive = request()->routeIs('activities.create');
+    $listPlan = request()->routeIs('plans.index');
     $listActive = request()->routeIs('activities.index') || request()->routeIs('activities.edit');
     $recapActive = request()->routeIs('activities.recap');
     $profileActive = request()->routeIs('profile.edit');
@@ -27,12 +27,12 @@
                 Dashboard
             </a>
 
-            <a href="{{ route('activities.create') }}" class="{{ $createActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">
+            <a href="{{ route('plans.index') }}" class="{{ $listPlan ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">
                 <svg class="actify-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="9"/>
                     <path d="M12 8v8M8 12h8"/>
                 </svg>
-                Tambah Aktivitas
+                Rencana
             </a>
 
             <a href="{{ route('activities.index') }}" class="{{ $listActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">
@@ -40,7 +40,7 @@
                     <path d="M8 6h13M8 12h13M8 18h13"/>
                     <path d="M3 6h.01M3 12h.01M3 18h.01"/>
                 </svg>
-                Data Tracking
+                Aktivitas
             </a>
 
             <a href="{{ route('activities.recap') }}" class="{{ $recapActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">
@@ -98,8 +98,8 @@
 
         <div x-cloak x-show="open" x-transition class="mt-4 space-y-2 border-t border-white/10 pt-4">
             <a href="{{ route('dashboard') }}" class="{{ $dashboardActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Dashboard</a>
-            <a href="{{ route('activities.create') }}" class="{{ $createActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Tambah Aktivitas</a>
-            <a href="{{ route('activities.index') }}" class="{{ $listActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Data Tracking</a>
+            <a href="{{ route('plans.index') }}" class="{{ $listPlan ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Rencana</a>
+            <a href="{{ route('activities.index') }}" class="{{ $listActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Aktivitas</a>
             <a href="{{ route('activities.recap') }}" class="{{ $recapActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Rekapitulasi</a>
             <a href="{{ route('profile.edit') }}" class="{{ $profileActive ? 'actify-nav-link actify-nav-link-active' : 'actify-nav-link' }}">Profil</a>
 

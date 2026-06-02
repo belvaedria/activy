@@ -2,80 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ActivityController extends Controller
+class PlanController extends Controller
 {
     // GET /api/activities (Daftar Aktivitas & Filter)
     public function index()
     {
-        $activities = Activity::where(
+        $plans = Plan::where(
             'user_id',
             Auth::id()
         )
         ->orderBy('tanggal', 'desc')
         ->get();
         
-        return view('activities.index', compact('activities'));
+        return view('plans.index', compact('plans'));
     }
 
     public function recap()
     {
-        $activities = Activity::where(
+        $plans = Plan::where(
             'user_id',
             Auth::id()
         )
         ->orderBy('tanggal', 'desc')
         ->get();
 
-        return view('activities.recap', compact('activities'));
+        return view('plans.recap', compact('plans'));
     }
 
     public function destroy($id)
     {
-        $activity = Activity::where('_id', $id)
+        $plan = Plan::where('_id', $id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
-        $activity->delete();
+        $plan->delete();
 
-        return redirect()->route('activities.index')->with('success', 'Aktivitas berhasil dihapus!');
+        return redirect()->route('plans.index')->with('success', 'Rencana berhasil dihapus!');
     }
 
     public function create()
     {
-        return view('activities.create');
+        return view('plans.create');
     }
 
-    // POST /api/activities (Tambah Aktivitas)
+    // POST /api/plans (Tambah Rencana)
     public function store(Request $request)
     {
         // Validasi input
         $validated = $request->validate([
-            'plan_id' => 'nullable|string',
-            'nama_aktivitas' => 'required|string',
+            'nama_rencana' => 'required|string',
             'kategori' => 'required|string',
             'tanggal' => 'required|date',
-            'durasi' => 'required|numeric',
-            'deskripsi' => 'nullable|string'
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'status' => 'nullable|string'
         ]);
 
+        $validated['status'] = 'pending';
+        
         // Simpan ke MongoDB
         $validated['user_id'] = Auth::id();
 
-        $activity = Activity::create($validated);
-        
-        return redirect()->route('activities.index')->with('success', 'Aktivitas berhasil ditambahkan!');
+        $plan = Plan::create($validated);
+
+        return redirect()->route('plans.index')->with('success', 'Rencana berhasil ditambahkan!');
     }
 
     // Menampilkan form edit dengan data lama
     public function edit($id)
     {
-        $activity = Activity::where('_id', $id)
+        $plan = Plan::where('_id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-        return view('activities.edit', compact('activity'));
+        return view('plans.edit', compact('plan'));
     }
 
     // Memproses perubahan data
@@ -83,19 +85,19 @@ class ActivityController extends Controller
     {
         // Validasi input sama seperti saat tambah data
         $validated = $request->validate([
-            'plan_id' => 'nullable|string',
-            'nama_aktivitas' => 'required|string',
+            'nama_rencana' => 'required|string',
             'kategori' => 'required|string',
             'tanggal' => 'required|date',
-            'durasi' => 'required|numeric',
-            'deskripsi' => 'nullable|string'
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+            'status' => 'nullable|string'
         ]);
 
-        $activity = Activity::where('_id', $id)
+        $plan = Plan::where('_id', $id)
         ->where('user_id', Auth::id())
         ->firstOrFail();
-        $activity->update($validated);
+        $plan->update($validated);
 
-        return redirect()->route('activities.index')->with('success', 'Aktivitas berhasil diperbarui!');
+        return redirect()->route('plans.index')->with('success', 'Rencana berhasil diperbarui!');
     }
 }
