@@ -5,22 +5,55 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PlanController extends Controller
 {
-    // GET /api/activities (Daftar Aktivitas & Filter)
-    public function index()
+    public function index(Request $request)
     {
+        $selectedDate = $request->tanggal
+            ?? now()->format('Y-m-d');
+
+        $currentDate = Carbon::parse($selectedDate);
+        $currentMonth = $currentDate->month;
+        $currentYear = $currentDate->year;
+
+        $daysInMonth = $currentDate->daysInMonth;
+
+        $firstDayOfMonth = Carbon::create(
+            $currentYear,
+            $currentMonth,
+            1
+        )->dayOfWeek;
+
+        $monthName = $currentDate->translatedFormat('F');
+
         $plans = Plan::where(
             'user_id',
             Auth::id()
         )
-        ->orderBy('tanggal', 'desc')
+        ->where(
+            'tanggal',
+            $selectedDate
+        )
+        ->orderBy('jam_mulai')
         ->get();
-        
-        return view('plans.index', compact('plans'));
+
+        return view(
+            'plans.index',
+            compact(
+                'plans',
+                'selectedDate',
+                'currentMonth',
+                'currentYear',
+                'daysInMonth',
+                'firstDayOfMonth',
+                'monthName'
+            )
+        );
     }
 
+    /*
     public function recap()
     {
         $plans = Plan::where(
@@ -32,6 +65,7 @@ class PlanController extends Controller
 
         return view('plans.recap', compact('plans'));
     }
+    */
 
     public function destroy($id)
     {
@@ -58,7 +92,6 @@ class PlanController extends Controller
             'tanggal' => 'required|date',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'status' => 'nullable|string'
         ]);
 
         $validated['status'] = 'pending';
@@ -66,7 +99,7 @@ class PlanController extends Controller
         // Simpan ke MongoDB
         $validated['user_id'] = Auth::id();
 
-        $plan = Plan::create($validated);
+        Plan::create($validated);
 
         return redirect()->route('plans.index')->with('success', 'Rencana berhasil ditambahkan!');
     }
@@ -90,7 +123,6 @@ class PlanController extends Controller
             'tanggal' => 'required|date',
             'jam_mulai' => 'required|date_format:H:i',
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            'status' => 'nullable|string'
         ]);
 
         $plan = Plan::where('_id', $id)
