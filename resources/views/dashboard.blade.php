@@ -22,21 +22,8 @@
                         Pantau aktivitas harianmu dengan lebih mudah.
                     </h1>
                     <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                        Dashboard ini menampilkan ringkasan aktivitas, total durasi, aktivitas terbaru, dan distribusi kategori.
+                        Pantau rencana dan aktivitas harianmu dalam satu tempat untuk melihat progres dan tingkat kepatuhan terhadap target yang telah dibuat.
                     </p>
-                </div>
-
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('activities.create') }}" class="actify-btn actify-btn-primary">
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 5v14M5 12h14"/>
-                        </svg>
-                        Tambah Aktivitas
-                    </a>
-
-                    <a href="{{ route('activities.index') }}" class="actify-btn actify-btn-secondary">
-                        Data Tracking
-                    </a>
                 </div>
             </div>
         </section>
@@ -52,8 +39,8 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Total Aktivitas</p>
-                        <p class="text-2xl font-bold text-slate-950">4</p>
+                        <p class="text-sm font-medium text-slate-500">Aktivitas hari ini</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $todayActivities->count() }}</p>
                         <p class="text-xs text-slate-500">aktivitas</p>
                     </div>
                 </div>
@@ -68,9 +55,9 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Total Durasi</p>
-                        <p class="text-2xl font-bold text-slate-950">7.5 jam</p>
-                        <p class="text-xs text-slate-500">total waktu</p>
+                        <p class="text-sm font-medium text-slate-500">Rencana hari ini</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $todayPlans->count() }}</p>
+                        <p class="text-xs text-slate-500">rencana</p>
                     </div>
                 </div>
             </div>
@@ -84,9 +71,9 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Rata-rata Durasi</p>
-                        <p class="text-2xl font-bold text-slate-950">1.88 jam</p>
-                        <p class="text-xs text-slate-500">per aktivitas</p>
+                        <p class="text-sm font-medium text-slate-500">Rencana terpenuhi</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $completedPlans }}</p>
+                        <p class="text-xs text-slate-500">rencana</p>
                     </div>
                 </div>
             </div>
@@ -99,9 +86,9 @@
                         </svg>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-slate-500">Kategori Terbanyak</p>
-                        <p class="text-2xl font-bold text-slate-950">Produktif</p>
-                        <p class="text-xs text-slate-500">kategori</p>
+                        <p class="text-sm font-medium text-slate-500">Tingkat Kepatuhan</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $complianceRate }}%</p>
+                        <p class="text-xs text-slate-500">%</p>
                     </div>
                 </div>
             </div>
@@ -109,12 +96,49 @@
 
         <!-- Main Tracking Section -->
         <section style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px;">
-            <!-- Aktivitas Terbaru -->
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="mb-5 flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-950">Aktivitas Terbaru</h3>
-                        <p class="mt-1 text-sm text-slate-500">Data contoh sementara untuk tampilan dashboard.</p>
+                        <h3 class="text-lg font-bold text-slate-950">Rencana hari ini</h3>
+                    </div>
+
+                    <a href="{{ route('plans.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                        Lihat semua →
+                    </a>
+                </div>
+
+                <div class="overflow-hidden rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                            <tr>
+                                <th class="px-4 py-3">Nama Rencana</th>
+                                <th class="px-4 py-3">Kategori</th>
+                                <th class="px-4 py-3">Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            @forelse($todayPlans as $plan)
+                                <tr>
+                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $plan->nama_rencana }}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{{ $plan->kategori }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-4 py-3 text-center text-slate-500">Tidak ada rencana untuk hari ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-5 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-950">Aktivitas hari ini</h3>
                     </div>
 
                     <a href="{{ route('activities.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
@@ -128,94 +152,116 @@
                             <tr>
                                 <th class="px-4 py-3">Nama Aktivitas</th>
                                 <th class="px-4 py-3">Kategori</th>
-                                <th class="px-4 py-3">Tanggal</th>
                                 <th class="px-4 py-3">Durasi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200">
-                            <tr>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Belajar MongoDB</td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Produktif</span>
-                                </td>
-                                <td class="px-4 py-3 text-slate-600">01 Jun 2026</td>
-                                <td class="px-4 py-3 text-slate-600">2 jam</td>
-                            </tr>
-
-                            <tr>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Olahraga Ringan</td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">Sehat</span>
-                                </td>
-                                <td class="px-4 py-3 text-slate-600">01 Jun 2026</td>
-                                <td class="px-4 py-3 text-slate-600">1 jam</td>
-                            </tr>
-
-                            <tr>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Mengerjakan UI Activy</td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Produktif</span>
-                                </td>
-                                <td class="px-4 py-3 text-slate-600">02 Jun 2026</td>
-                                <td class="px-4 py-3 text-slate-600">2.5 jam</td>
-                            </tr>
-
-                            <tr>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Istirahat</td>
-                                <td class="px-4 py-3">
-                                    <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">Personal</span>
-                                </td>
-                                <td class="px-4 py-3 text-slate-600">02 Jun 2026</td>
-                                <td class="px-4 py-3 text-slate-600">2 jam</td>
-                            </tr>
+                            @forelse($todayActivities as $activity)
+                                <tr>
+                                    <td class="px-4 py-3 font-semibold text-slate-900">{{ $activity->nama_aktivitas }}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">{{ $activity->kategori }}</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $activity->durasi }} jam</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-4 py-3 text-center text-slate-500">Belum ada aktivitas yang dicatat untuk hari ini.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
+        </section>
 
-            <!-- Distribusi Kategori -->
+        <section
+            class="mt-6"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 class="text-lg font-bold text-slate-950">Distribusi Kategori</h3>
-                <p class="mt-1 text-sm text-slate-500">Ringkasan kategori dari aktivitas harian.</p>
 
-                <div class="mt-6 space-y-5">
-                    <div>
-                        <div class="mb-2 flex items-center justify-between text-sm">
-                            <span class="font-semibold text-emerald-700">Produktif</span>
-                            <span class="text-slate-600">50% / 4.5 jam</span>
-                        </div>
-                        <div class="h-3 rounded-full bg-slate-100">
-                            <div class="h-3 rounded-full bg-emerald-500" style="width: 50%;"></div>
-                        </div>
-                    </div>
+                <h3 class="text-lg font-bold text-slate-950">
+                    Kalender
+                </h3>
 
-                    <div>
-                        <div class="mb-2 flex items-center justify-between text-sm">
-                            <span class="font-semibold text-blue-700">Sehat</span>
-                            <span class="text-slate-600">25% / 1 jam</span>
-                        </div>
-                        <div class="h-3 rounded-full bg-slate-100">
-                            <div class="h-3 rounded-full bg-blue-500" style="width: 25%;"></div>
-                        </div>
-                    </div>
+                <form method="GET" action="{{ route('dashboard') }}">
 
-                    <div>
-                        <div class="mb-2 flex items-center justify-between text-sm">
-                            <span class="font-semibold text-amber-700">Personal</span>
-                            <span class="text-slate-600">25% / 2 jam</span>
-                        </div>
-                        <div class="h-3 rounded-full bg-slate-100">
-                            <div class="h-3 rounded-full bg-amber-500" style="width: 25%;"></div>
-                        </div>
-                    </div>
-                </div>
+                    <input
+                        type="date"
+                        name="date"
+                        value="{{ $selectedDate }}"
+                        onchange="this.form.submit()"
+                        class="mt-4 w-full rounded-lg border border-slate-300">
 
-                <div class="mt-6 rounded-xl border border-emerald-100 bg-emerald-50 p-4">
-                    <p class="text-sm font-semibold text-emerald-800">
-                        Aktivitas produktif menjadi kategori paling dominan minggu ini.
-                    </p>
-                </div>
+                </form>
+
             </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                <h3 class="text-lg font-bold text-slate-950">
+                    Detail Tanggal
+                </h3>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ $selectedDate }}
+                </p>
+
+                <h4 class="mt-6 font-semibold">
+                    Rencana
+                </h4>
+
+                <ul class="mt-2 space-y-2">
+
+                    @forelse($datePlans as $plan)
+
+                        <li>
+                            • {{ $plan->nama_rencana }}
+
+                            <span class="text-slate-500">
+                                ({{ $plan->jam_mulai }} - {{ $plan->jam_selesai }})
+                            </span>
+                        </li>
+
+                    @empty
+
+                        <li class="text-slate-500">
+                            Tidak ada rencana
+                        </li>
+
+                    @endforelse
+
+                </ul>
+
+                <h4 class="mt-6 font-semibold">
+                    Aktivitas
+                </h4>
+
+                <ul class="mt-2 space-y-2">
+
+                    @forelse($dateActivities as $activity)
+
+                    <li>
+                        • {{ $activity->nama_aktivitas }}
+
+                        <span class="text-slate-500">
+                            ({{ $activity->durasi }} jam)
+                        </span>
+                    </li>
+
+                    @empty
+
+                        <li class="text-slate-500">
+                            Tidak ada aktivitas
+                        </li>
+
+                    @endforelse
+
+                </ul>
+
+            </div>
+
         </section>
     </div>
 </x-app-layout>

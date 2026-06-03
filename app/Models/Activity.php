@@ -10,8 +10,7 @@ class Activity extends Model
 {
     // Tentukan nama collection di MongoDB
     protected $collection = 'activities';
-
-    // Tentukan field apa saja yang boleh diisi (berdasarkan UI kamu)
+    
     protected $fillable = [
         'user_id',
         'plan_id',

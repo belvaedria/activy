@@ -15,6 +15,37 @@
                 @csrf
 
                 <div>
+                    <div>
+                        <label for="plan_id" class="actify-label">
+                            Rencana Terkait
+                        </label>
+
+                        <select
+                            id="plan_id"
+                            name="plan_id"
+                            class="actify-input">
+
+                            <option value="">
+                                Aktivitas Spontan (Tanpa Rencana)
+                            </option>
+
+                            @foreach($plans as $plan)
+
+                                <option
+                                    value="{{ $plan->_id }}"
+                                    data-nama="{{ $plan->nama_rencana }}"
+                                    data-kategori="{{ $plan->kategori }}"
+                                    data-tanggal="{{ $plan->tanggal }}">
+
+                                    {{ $plan->nama_rencana }}
+                                    ({{ $plan->tanggal }})
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+                    </div>
                     <label for="nama_aktivitas" class="actify-label">Nama Aktivitas</label>
                     <input id="nama_aktivitas" type="text" name="nama_aktivitas" value="{{ old('nama_aktivitas') }}" required class="actify-input" placeholder="Contoh: Belajar Basis Data">
                     @error('nama_aktivitas')
@@ -74,4 +105,49 @@
             </form>
         </section>
     </div>
+
+    <script>
+
+        document
+            .getElementById('plan_id')
+            .addEventListener('change', function () {
+
+                const selected =
+                    this.options[this.selectedIndex];
+
+                if(this.value){
+
+                    document
+                        .getElementById('nama_aktivitas')
+                        .value =
+                        selected.dataset.nama;
+
+                    document
+                        .getElementById('kategori')
+                        .value =
+                        selected.dataset.kategori;
+
+                    document
+                        .getElementById('tanggal')
+                        .value =
+                        selected.dataset.tanggal;
+                } else {
+
+                    document
+                        .getElementById('nama_aktivitas')
+                        .value = '';
+
+                    document
+                        .getElementById('kategori')
+                        .value = '';
+
+                    document
+                        .getElementById('tanggal')
+                        .value = '';
+
+                }
+
+            });
+
+    </script>
 </x-app-layout>

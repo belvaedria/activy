@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,7 +46,11 @@ class ActivityController extends Controller
 
     public function create()
     {
-        return view('activities.create');
+        $plans = Plan::where('user_id', Auth::id())
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        return view('activities.create', compact('plans'));
     }
 
     // POST /api/activities (Tambah Aktivitas)
