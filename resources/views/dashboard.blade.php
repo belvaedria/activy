@@ -185,16 +185,56 @@
                     Kalender
                 </h3>
 
-                <form method="GET" action="{{ route('dashboard') }}">
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ \Carbon\Carbon::create($currentYear, $currentMonth, 1)->translatedFormat('F Y') }}
+                </p>
 
-                    <input
-                        type="date"
-                        name="date"
-                        value="{{ $selectedDate }}"
-                        onchange="this.form.submit()"
-                        class="mt-4 w-full rounded-lg border border-slate-300">
+                <div class="mt-4">
 
-                </form>
+                    <div class="grid grid-cols-7 gap-2 text-center text-xs font-semibold text-slate-500 mb-2">
+                        <div>Min</div>
+                        <div>Sen</div>
+                        <div>Sel</div>
+                        <div>Rab</div>
+                        <div>Kam</div>
+                        <div>Jum</div>
+                        <div>Sab</div>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-2">
+
+                        @for($i = 0; $i < $firstDayOfWeek; $i++)
+                            <div></div>
+                        @endfor
+
+                        @for($day = 1; $day <= $daysInMonth; $day++)
+
+                            @php
+                                $date = sprintf(
+                                    '%04d-%02d-%02d',
+                                    $currentYear,
+                                    $currentMonth,
+                                    $day
+                                );
+                            @endphp
+
+                            <a
+                                href="{{ route('dashboard', ['date' => $date]) }}"
+                                class="rounded-lg border px-2 py-2 text-center text-sm hover:bg-emerald-50
+                                {{ $selectedDate == $date
+                                    ? 'border-emerald-500 bg-emerald-100 font-bold'
+                                    : 'border-slate-200'
+                                }}">
+
+                                {{ $day }}
+
+                            </a>
+
+                        @endfor
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -205,7 +245,7 @@
                 </h3>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    {{ $selectedDate }}
+                    {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('d F Y') }}
                 </p>
 
                 <h4 class="mt-6 font-semibold">

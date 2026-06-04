@@ -48,6 +48,23 @@ class DashboardController extends Controller
             ->where('tanggal', $selectedDate)
             ->get();
 
+        $calendarDate = Carbon::parse($selectedDate);
+
+        $currentMonth = $calendarDate->month;
+        $currentYear = $calendarDate->year;
+
+        $daysInMonth = $calendarDate->daysInMonth;
+
+        $firstDayOfMonth =
+            Carbon::create(
+                $currentYear,
+                $currentMonth,
+                1
+            );
+
+        $firstDayOfWeek =
+            $firstDayOfMonth->dayOfWeek;
+
         return view(
             'dashboard',
             compact(
@@ -57,7 +74,11 @@ class DashboardController extends Controller
                 'complianceRate',
                 'datePlans',
                 'dateActivities',
-                'selectedDate'
+                'selectedDate',
+                'currentMonth',
+                'currentYear',
+                'daysInMonth',
+                'firstDayOfWeek',
             )
         );
     }
