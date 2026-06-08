@@ -11,13 +11,16 @@ class Activity extends Model
     // Tentukan nama collection di MongoDB
     protected $collection = 'activities';
     
-    protected $fillable = [
-        'user_id',
-        'plan_id',
-        'nama_aktivitas',
-        'kategori',
-        'tanggal',
-        'durasi',
-        'deskripsi'
-    ];
+protected $fillable = [
+    'plan_id',
+    'nama_aktivitas',
+    'kategori',
+    'tanggal',
+    'jam_mulai',
+    'jam_selesai',
+    'durasi',
+    'status',
+    'deskripsi',
+    'user_id',
+];
 }

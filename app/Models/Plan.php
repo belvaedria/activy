@@ -8,13 +8,13 @@ class Plan extends Model
 {
     protected $collection = 'plans';
 
-    protected $fillable = [
-        'user_id',
-        'nama_rencana',
-        'kategori',
-        'tanggal',
-        'jam_mulai',
-        'jam_selesai',
-        'status'
-    ];
+protected $fillable = [
+    'nama_rencana',
+    'kategori',
+    'tanggal',
+    'jam_mulai',
+    'jam_selesai',
+    'status',
+    'user_id',
+];
 }
