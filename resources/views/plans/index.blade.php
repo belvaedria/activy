@@ -7,39 +7,172 @@
             </p>
         </div>
 
+        @if(session('success'))
+            <div class="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @php
             $currentCalendar = \Carbon\Carbon::create($currentYear, $currentMonth, 1);
             $prevMonth = $currentCalendar->copy()->subMonth()->format('Y-m-d');
             $nextMonth = $currentCalendar->copy()->addMonth()->format('Y-m-d');
+
+            $todayDate = now('Asia/Jakarta')->format('Y-m-d');
+
+            $statusLabel = function ($status) {
+                return match($status) {
+                    'pending' => 'Belum dimulai',
+                    'Belum Dikerjakan' => 'Belum dimulai',
+                    null => 'Belum dimulai',
+                    default => $status,
+                };
+            };
+
+            $statusClass = function ($status) {
+                $label = match($status) {
+                    'pending' => 'Belum dimulai',
+                    'Belum Dikerjakan' => 'Belum dimulai',
+                    null => 'Belum dimulai',
+                    default => $status,
+                };
+
+                return match($label) {
+                    'Selesai' => 'bg-emerald-50 text-emerald-700',
+                    'Terlambat' => 'bg-orange-50 text-orange-700',
+                    'Sedang Dikerjakan' => 'bg-blue-50 text-blue-700',
+                    default => 'bg-slate-100 text-slate-600',
+                };
+            };
+
+            $categoryClass = function ($kategori) {
+                return match($kategori) {
+                    'Kuliah' => 'bg-blue-50 text-blue-700',
+                    'Organisasi' => 'bg-purple-50 text-purple-700',
+                    'Personal' => 'bg-orange-50 text-orange-700',
+                    'Sehat' => 'bg-green-50 text-green-700',
+                    default => 'bg-emerald-50 text-emerald-700',
+                };
+            };
+
+            $dotClass = function ($kategori) {
+                return match($kategori) {
+                    'Kuliah' => 'bg-blue-500',
+                    'Organisasi' => 'bg-purple-500',
+                    'Personal' => 'bg-orange-500',
+                    'Sehat' => 'bg-green-500',
+                    default => 'bg-emerald-500',
+                };
+            };
         @endphp
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+        <!-- Statistic Cards -->
+        <section class="mb-6" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18"/>
+                            <path d="M9 15l2 2 4-4"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Rencana hari ini</p>
+                        <p class="text-3xl font-bold text-slate-950">{{ $todayPlansCount ?? 0 }}</p>
+                        <p class="text-sm text-slate-500">rencana</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <path d="M16 2v4M8 2v4M3 10h18"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Rencana minggu ini</p>
+                        <p class="text-3xl font-bold text-slate-950">{{ $weekPlansCount ?? 0 }}</p>
+                        <p class="text-sm text-slate-500">rencana</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Selesai</p>
+                        <p class="text-3xl font-bold text-slate-950">{{ $completedPlansCount ?? 0 }}</p>
+                        <p class="text-sm text-slate-500">rencana</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-orange-700">
+                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M12 7v5l3 2"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Terlambat</p>
+                        <p class="text-3xl font-bold text-slate-950">{{ $latePlansCount ?? 0 }}</p>
+                        <p class="text-sm text-slate-500">rencana</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Rencana Section -->
+        <section style="display: grid; grid-template-columns: 1fr 0.95fr; gap: 24px; align-items: start;">
 
             <!-- Kalender -->
-            <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="mb-5 flex items-start justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-950">
+                        <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
+                            <span class="text-emerald-700">
+                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                    <path d="M16 2v4M8 2v4M3 10h18"/>
+                                </svg>
+                            </span>
                             Kalender
                         </h3>
+
                         <p class="mt-1 text-sm text-slate-500">
                             {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
                         </p>
                     </div>
 
-                    <a href="{{ route('plans.index', ['tanggal' => now('Asia/Jakarta')->format('Y-m-d')]) }}"
+                    <a href="{{ route('plans.index', ['tanggal' => $todayDate]) }}"
                        class="rounded-xl border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
                         Hari ini
                     </a>
                 </div>
 
-                <div class="mb-4 flex items-center justify-center gap-5">
+                <div class="mb-5 flex items-center justify-center gap-5">
                     <a href="{{ route('plans.index', ['tanggal' => $prevMonth]) }}"
                        class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700">
                         ‹
                     </a>
 
-                    <p class="text-base font-bold text-slate-950">
+                    <p class="text-lg font-bold text-slate-950">
                         {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
                     </p>
 
@@ -66,166 +199,227 @@
                      class="overflow-hidden rounded-b-xl border border-slate-200 bg-white">
 
                     @for ($i = 0; $i < $firstDayOfMonth; $i++)
-                        <div style="min-height: 72px;" class="border border-slate-100 bg-slate-50/60"></div>
+                        <div style="min-height: 76px;" class="border border-slate-100 bg-slate-50/60"></div>
                     @endfor
 
                     @for ($day = 1; $day <= $daysInMonth; $day++)
                         @php
                             $date = sprintf('%04d-%02d-%02d', $currentYear, $currentMonth, $day);
                             $isSelected = $selectedDate == $date;
-                            $isToday = $date == now('Asia/Jakarta')->format('Y-m-d');
+                            $isToday = $date == $todayDate;
+
+                            $plansInDate = $monthPlans
+                                ->where('tanggal', $date)
+                                ->take(4);
                         @endphp
 
                         <a href="{{ route('plans.index', ['tanggal' => $date]) }}"
-                           style="min-height: 72px;"
+                           style="min-height: 76px;"
                            class="relative flex flex-col items-center justify-center border border-slate-100 p-2 text-sm transition
                            {{ $isSelected
-                                ? 'bg-emerald-100 text-emerald-800 ring-2 ring-inset ring-emerald-500 font-bold'
+                                ? 'bg-emerald-50 text-emerald-800 ring-2 ring-inset ring-emerald-500 font-bold'
                                 : 'bg-white text-slate-700 hover:bg-emerald-50'
                            }}">
 
                             <span>{{ $day }}</span>
 
-                            <div class="mt-2 flex items-center justify-center gap-1">
-                                @if($isToday)
-                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
-                                @endif
+                            <div class="mt-2 flex min-h-[8px] items-center justify-center gap-1">
+                                @foreach($plansInDate as $planDot)
+                                    <span class="h-1.5 w-1.5 rounded-full {{ $dotClass($planDot->kategori) }}"></span>
+                                @endforeach
 
-                                @if($isSelected)
-                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
+                                @if($plansInDate->count() == 0 && $isToday)
+                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
                                 @endif
                             </div>
                         </a>
                     @endfor
                 </div>
 
-                <div class="mt-5 flex gap-5 text-xs text-slate-500">
+                <div class="mt-5 flex flex-wrap gap-5 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                        Produktif
+                    </div>
+
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-                        Hari ini
+                        Kuliah
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-emerald-600"></span>
-                        Tanggal dipilih
-                    </div>
-                </div>
-            </section>
-
-            <!-- Detail Rencana -->
-            <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="mb-5 flex items-start justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-950">
-                            Detail Tanggal
-                        </h3>
-                        <p class="mt-1 text-sm text-slate-500">
-                            {{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('l, d F Y') }}
-                        </p>
+                        <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                        Organisasi
                     </div>
 
-                    <button
-                        type="button"
-                        onclick="toggleForm()"
-                        class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
-                        + Tambah
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                        Personal
+                    </div>
                 </div>
+            </div>
 
-                <div class="space-y-3">
-                    @forelse ($plans as $plan)
-                        @php
-                            /*
-                                Status sementara.
-                                Nanti kalau backend sudah mengirim status dari aktivitas,
-                                bisa otomatis ambil dari $plan->status.
-                            */
-                            $status = $plan->status ?? 'Belum dimulai';
+            <div class="space-y-6">
 
-                            $statusClass = match($status) {
-                                'Selesai' => 'bg-emerald-50 text-emerald-700',
-                                'Terlambat' => 'bg-orange-50 text-orange-700',
-                                'Sedang Dikerjakan' => 'bg-blue-50 text-blue-700',
-                                default => 'bg-slate-100 text-slate-600',
-                            };
+                <!-- Detail Tanggal -->
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="mb-5 flex items-start justify-between">
+                        <div>
+                            <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
+                                <span class="text-emerald-700">
+                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                        <path d="M16 2v4M8 2v4M3 10h18"/>
+                                    </svg>
+                                </span>
+                                Detail Tanggal
+                            </h3>
 
-                            $dotClass = match($plan->kategori) {
-                                'Kuliah' => 'bg-blue-500',
-                                'Organisasi' => 'bg-purple-500',
-                                'Personal' => 'bg-orange-500',
-                                'Sehat' => 'bg-green-500',
-                                default => 'bg-emerald-500',
-                            };
+                            <p class="mt-1 text-sm text-slate-500">
+                                {{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('l, d F Y') }}
+                            </p>
+                        </div>
 
-                            $categoryClass = match($plan->kategori) {
-                                'Kuliah' => 'bg-blue-50 text-blue-700',
-                                'Organisasi' => 'bg-purple-50 text-purple-700',
-                                'Personal' => 'bg-orange-50 text-orange-700',
-                                'Sehat' => 'bg-green-50 text-green-700',
-                                default => 'bg-emerald-50 text-emerald-700',
-                            };
-                        @endphp
+                        <button
+                            type="button"
+                            onclick="toggleForm()"
+                            class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                            Tambah Rencana
+                        </button>
+                    </div>
 
-                        <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                            <div class="flex items-center justify-between gap-4">
-                                <div class="flex items-start gap-3">
-                                    <span class="mt-2 h-2 w-2 rounded-full {{ $dotClass }}"></span>
+                    <div class="space-y-3">
+                        @forelse ($plans as $plan)
+                            <div class="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div class="flex items-start gap-3">
+                                        <span class="mt-2 h-2 w-2 rounded-full {{ $dotClass($plan->kategori) }}"></span>
 
-                                    <div>
-                                        <h4 class="font-semibold text-slate-950">
-                                            {{ $plan->nama_rencana }}
-                                        </h4>
+                                        <div>
+                                            <h4 class="font-semibold text-slate-950">
+                                                {{ $plan->nama_rencana }}
+                                            </h4>
 
-                                        <p class="mt-1 text-sm text-slate-500">
-                                            {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
-                                        </p>
+                                            <p class="mt-1 text-sm text-slate-500">
+                                                {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="flex items-center gap-3">
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryClass }}">
-                                        {{ $plan->kategori }}
-                                    </span>
+                                    <div class="flex items-center gap-3">
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryClass($plan->kategori) }}">
+                                            {{ $plan->kategori }}
+                                        </span>
 
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusClass }}">
-                                        {{ $status }}
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        class="text-sm"
-                                        onclick="editPlan(
-                                            @js($plan->_id),
-                                            @js($plan->nama_rencana),
-                                            @js($plan->kategori),
-                                            @js($plan->jam_mulai),
-                                            @js($plan->jam_selesai)
-                                        )">
-                                        ✏️
-                                    </button>
-
-                                    <form action="{{ route('plans.destroy', $plan->_id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusClass($plan->status ?? null) }}">
+                                            {{ $statusLabel($plan->status ?? null) }}
+                                        </span>
 
                                         <button
-                                            type="submit"
-                                            onclick="return confirm('Hapus rencana ini?')"
-                                            class="text-sm">
-                                            🗑️
+                                            type="button"
+                                            class="text-sm"
+                                            onclick="editPlan(
+                                                @js($plan->_id),
+                                                @js($plan->nama_rencana),
+                                                @js($plan->kategori),
+                                                @js($plan->jam_mulai),
+                                                @js($plan->jam_selesai)
+                                            )">
+                                            ✏️
                                         </button>
-                                    </form>
+
+                                        <form action="{{ route('plans.destroy', $plan->_id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                onclick="return confirm('Hapus rencana ini?')"
+                                                class="text-sm">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-                            Belum ada rencana pada tanggal ini.
-                        </div>
-                    @endforelse
+                        @empty
+                            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                                Belum ada rencana pada tanggal ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
+                       class="mt-4 block rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
+                        Lihat semua rencana hari ini →
+                    </a>
                 </div>
-            </section>
-        </div>
+
+                <!-- Rencana Minggu Ini -->
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="mb-5 flex items-start justify-between">
+                        <div>
+                            <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
+                                <span class="text-emerald-700">
+                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                        <path d="M16 2v4M8 2v4M3 10h18"/>
+                                    </svg>
+                                </span>
+                                Rencana Minggu Ini
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                {{ \Carbon\Carbon::parse($startOfWeek)->locale('id')->translatedFormat('d M') }}
+                                -
+                                {{ \Carbon\Carbon::parse($endOfWeek)->locale('id')->translatedFormat('d M Y') }}
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            onclick="toggleForm()"
+                            class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
+                            Tambah Rencana
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">
+                        @foreach($weekDates as $week)
+                            <a href="{{ route('plans.index', ['tanggal' => $week['date']]) }}"
+                               class="rounded-xl border px-3 py-4 text-center transition
+                               {{ $week['is_selected']
+                                    ? 'border-emerald-400 bg-emerald-50 ring-1 ring-emerald-400'
+                                    : 'border-slate-200 bg-white hover:bg-emerald-50'
+                               }}">
+
+                                <p class="text-sm font-semibold {{ $week['is_selected'] ? 'text-emerald-800' : 'text-slate-500' }}">
+                                    {{ $week['short_day'] }}
+                                </p>
+
+                                <p class="mt-2 text-2xl font-bold text-slate-950">
+                                    {{ $week['count'] }}
+                                </p>
+
+                                <p class="text-xs text-slate-500">
+                                    rencana
+                                </p>
+
+                                <div class="mt-3 h-1 rounded-full bg-slate-100">
+                                    <div class="h-1 rounded-full bg-emerald-500"
+                                         style="width: {{ min($week['count'] * 25, 100) }}%;"></div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+
+                    <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
+                       class="mt-4 block rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
+                        Lihat rencana minggu ini →
+                    </a>
+                </div>
+            </div>
+        </section>
 
         <!-- Form Tambah / Edit -->
         <section id="planForm" class="hidden mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -272,7 +466,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="tanggal" value="{{ $selectedDate }}">
+                <input id="tanggal" type="hidden" name="tanggal" value="{{ $selectedDate }}">
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
@@ -327,6 +521,7 @@
 
             document.getElementById('nama_rencana').value = '';
             document.getElementById('kategori').value = 'Produktif';
+            document.getElementById('tanggal').value = '{{ $selectedDate }}';
             document.getElementById('jam_mulai').value = '';
             document.getElementById('jam_selesai').value = '';
             document.getElementById('submitButton').innerText = 'Simpan Rencana';
@@ -345,6 +540,7 @@
 
             document.getElementById('nama_rencana').value = nama;
             document.getElementById('kategori').value = kategori;
+            document.getElementById('tanggal').value = '{{ $selectedDate }}';
             document.getElementById('jam_mulai').value = jamMulai;
             document.getElementById('jam_selesai').value = jamSelesai;
             document.getElementById('submitButton').innerText = 'Update Rencana';

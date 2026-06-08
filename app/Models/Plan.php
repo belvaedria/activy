@@ -6,15 +6,16 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class Plan extends Model
 {
+    protected $connection = 'mongodb';
     protected $collection = 'plans';
 
-protected $fillable = [
-    'nama_rencana',
-    'kategori',
-    'tanggal',
-    'jam_mulai',
-    'jam_selesai',
-    'status',
-    'user_id',
-];
+    protected $fillable = [
+        'user_id',
+        'nama_rencana',
+        'kategori',
+        'tanggal',
+        'jam_mulai',
+        'jam_selesai',
+        'status',
+    ];
 }
