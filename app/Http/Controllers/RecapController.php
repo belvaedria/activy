@@ -95,7 +95,6 @@ class RecapController extends Controller
                 'topCategory',
                 'categoryDistribution',
                 'planComparison',
-
                 'unfulfilledPlans',
                 'unplannedActivities',
             )
