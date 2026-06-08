@@ -11,6 +11,37 @@
             </div>
         @endif
 
+        @php
+            $currentCalendar = \Carbon\Carbon::create($currentYear, $currentMonth, 1);
+            $prevMonth = $currentCalendar->copy()->subMonth()->format('Y-m-d');
+            $nextMonth = $currentCalendar->copy()->addMonth()->format('Y-m-d');
+
+            // Penting: ini biar titik warna muncul sesuai tanggal.
+            $plansByDate = $monthPlans->groupBy(function ($plan) {
+                return \Carbon\Carbon::parse($plan->tanggal)->format('Y-m-d');
+            });
+
+            $categoryBadgeClass = function ($category) {
+                return match($category) {
+                    'Kuliah' => 'bg-blue-50 text-blue-700',
+                    'Organisasi' => 'bg-purple-50 text-purple-700',
+                    'Personal' => 'bg-orange-50 text-orange-700',
+                    'Sehat' => 'bg-green-50 text-green-700',
+                    default => 'bg-emerald-50 text-emerald-700',
+                };
+            };
+
+            $categoryDotClass = function ($category) {
+                return match($category) {
+                    'Kuliah' => 'bg-blue-500',
+                    'Organisasi' => 'bg-purple-500',
+                    'Personal' => 'bg-orange-500',
+                    'Sehat' => 'bg-green-500',
+                    default => 'bg-emerald-500',
+                };
+            };
+        @endphp
+
         <!-- Welcome Section -->
         <section class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -35,10 +66,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M8 6h13M8 12h13M8 18h13"/>
-                            <path d="M3 6h.01M3 12h.01M3 18h.01"/>
-                        </svg>
+                        ☰
                     </div>
 
                     <div>
@@ -52,10 +80,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="9"/>
-                            <path d="M12 7v5l3 2"/>
-                        </svg>
+                        🕘
                     </div>
 
                     <div>
@@ -69,10 +94,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 17l6-6 4 4 6-8"/>
-                            <path d="M14 7h6v6"/>
-                        </svg>
+                        ↗
                     </div>
 
                     <div>
@@ -86,9 +108,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2l3 6 6 .9-4.5 4.4 1.1 6.2L12 16.6 6.4 19.5l1.1-6.2L3 8.9 9 8z"/>
-                        </svg>
+                        ☆
                     </div>
 
                     <div>
@@ -107,7 +127,8 @@
                 <div class="mb-5 flex items-center justify-between">
                     <h3 class="text-lg font-bold text-slate-950">Rencana hari ini</h3>
 
-                    <a href="{{ route('plans.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                    <a href="{{ route('plans.index', ['tanggal' => now('Asia/Jakarta')->format('Y-m-d')]) }}"
+                       class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
                         Lihat semua →
                     </a>
                 </div>
@@ -130,7 +151,7 @@
                                     </td>
 
                                     <td class="px-4 py-3">
-                                        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($plan->kategori) }}">
                                             {{ $plan->kategori }}
                                         </span>
                                     </td>
@@ -156,7 +177,8 @@
                 <div class="mb-5 flex items-center justify-between">
                     <h3 class="text-lg font-bold text-slate-950">Aktivitas hari ini</h3>
 
-                    <a href="{{ route('activities.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                    <a href="{{ route('activities.index') }}"
+                       class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
                         Lihat semua →
                     </a>
                 </div>
@@ -179,7 +201,7 @@
                                     </td>
 
                                     <td class="px-4 py-3">
-                                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($activity->kategori) }}">
                                             {{ $activity->kategori }}
                                         </span>
                                     </td>
@@ -215,7 +237,7 @@
                         </h3>
 
                         <p class="mt-1 text-sm text-slate-500">
-                            {{ \Carbon\Carbon::create($currentYear, $currentMonth, 1)->locale('id')->translatedFormat('F Y') }}
+                            {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
                         </p>
                     </div>
 
@@ -224,29 +246,21 @@
                     </div>
                 </div>
 
+                <div class="mb-4 flex items-center justify-center gap-5">
+                    <a href="{{ route('dashboard', ['date' => $prevMonth]) }}"
+                       class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700">
+                        ‹
+                    </a>
 
-@php
-    $currentCalendar = \Carbon\Carbon::create($currentYear, $currentMonth, 1);
+                    <p class="text-sm font-bold text-slate-900">
+                        {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
+                    </p>
 
-    $prevMonth = $currentCalendar->copy()->subMonth()->format('Y-m-d');
-    $nextMonth = $currentCalendar->copy()->addMonth()->format('Y-m-d');
-@endphp
-
-<div class="mb-4 flex items-center justify-center gap-5">
-    <a href="{{ route('dashboard', ['date' => $prevMonth]) }}"
-       class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700">
-        ‹
-    </a>
-
-    <p class="text-sm font-bold text-slate-900">
-        {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
-    </p>
-
-    <a href="{{ route('dashboard', ['date' => $nextMonth]) }}"
-       class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700">
-        ›
-    </a>
-</div>
+                    <a href="{{ route('dashboard', ['date' => $nextMonth]) }}"
+                       class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-700">
+                        ›
+                    </a>
+                </div>
 
                 <!-- Header Hari -->
                 <div style="display: grid; grid-template-columns: repeat(7, 1fr);"
@@ -263,15 +277,16 @@
                 <!-- Isi Kalender -->
                 <div style="display: grid; grid-template-columns: repeat(7, 1fr);"
                      class="overflow-hidden rounded-b-xl border border-slate-200 bg-white">
+
                     @for($i = 0; $i < $firstDayOfWeek; $i++)
-                        <div style="min-height: 64px;" class="border border-slate-100 bg-slate-50/60 p-2 text-center text-sm text-slate-300"></div>
+                        <div style="min-height: 64px;" class="border border-slate-100 bg-slate-50/60 p-2"></div>
                     @endfor
 
                     @for($day = 1; $day <= $daysInMonth; $day++)
                         @php
                             $date = sprintf('%04d-%02d-%02d', $currentYear, $currentMonth, $day);
                             $isSelected = $selectedDate == $date;
-                            $isToday = $date == now('Asia/Jakarta')->format('Y-m-d');
+                            $plansOnDate = $plansByDate->get($date, collect())->take(4);
                         @endphp
 
                         <a href="{{ route('dashboard', ['date' => $date]) }}"
@@ -281,30 +296,43 @@
                                 ? 'bg-emerald-100 text-emerald-800 ring-2 ring-inset ring-emerald-500 font-bold'
                                 : 'bg-white text-slate-700 hover:bg-emerald-50'
                            }}">
+
                             <span>{{ $day }}</span>
 
-                            <div class="mt-2 flex items-center justify-center gap-1">
-                                @if($isToday)
-                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
-                                @endif
-
-                                @if($isSelected)
-                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
-                                @endif
+                            <div class="mt-2 flex min-h-[8px] items-center justify-center gap-1">
+                                @foreach($plansOnDate as $planDot)
+                                    <span class="block h-2 w-2 rounded-full {{ $categoryDotClass($planDot->kategori) }}"></span>
+                                @endforeach
                             </div>
                         </a>
                     @endfor
                 </div>
 
+                <!-- Legend -->
                 <div class="mt-5 flex flex-wrap gap-5 text-xs text-slate-500">
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-                        Hari ini
+                        <span class="block h-2 w-2 rounded-full bg-emerald-500"></span>
+                        Produktif
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-emerald-600"></span>
-                        Tanggal dipilih
+                        <span class="block h-2 w-2 rounded-full bg-blue-500"></span>
+                        Kuliah
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="block h-2 w-2 rounded-full bg-purple-500"></span>
+                        Organisasi
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="block h-2 w-2 rounded-full bg-orange-500"></span>
+                        Personal
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="block h-2 w-2 rounded-full bg-green-500"></span>
+                        Sehat
                     </div>
                 </div>
             </div>
@@ -332,17 +360,21 @@
                         @forelse($datePlans as $plan)
                             <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
                                 <div class="flex items-center justify-between gap-3">
-                                    <div>
-                                        <p class="font-semibold text-slate-900">
-                                            {{ $plan->nama_rencana }}
-                                        </p>
+                                    <div class="flex items-start gap-3">
+                                        <span class="mt-2 block h-2 w-2 rounded-full {{ $categoryDotClass($plan->kategori) }}"></span>
 
-                                        <p class="mt-1 text-xs text-slate-500">
-                                            {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
-                                        </p>
+                                        <div>
+                                            <p class="font-semibold text-slate-900">
+                                                {{ $plan->nama_rencana }}
+                                            </p>
+
+                                            <p class="mt-1 text-xs text-slate-500">
+                                                {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($plan->kategori) }}">
                                         {{ $plan->kategori }}
                                     </span>
                                 </div>
@@ -373,7 +405,7 @@
                                         </p>
                                     </div>
 
-                                    <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($activity->kategori) }}">
                                         {{ $activity->kategori }}
                                     </span>
                                 </div>
@@ -386,72 +418,47 @@
                     </div>
                 </div>
             </div>
-<!-- Rencana Minggu Ini -->
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="mb-5">
-        <h3 class="flex items-center gap-2 text-lg font-bold text-slate-950">
-            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-600">
-                🗓️
-            </span>
-            Rencana Minggu Ini
-        </h3>
 
-        <p class="mt-1 text-sm text-slate-500">
-            Ringkasan rencana mingguan.
-        </p>
-    </div>
+            <!-- Rencana Minggu Ini -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-5">
+                    <h3 class="flex items-center gap-2 text-lg font-bold text-slate-950">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-600">
+                            🗓️
+                        </span>
+                        Rencana Minggu Ini
+                    </h3>
 
-    @php
-        $selectedDayName = \Carbon\Carbon::parse($selectedDate)
-            ->locale('id')
-            ->translatedFormat('l');
+                    <p class="mt-1 text-sm text-slate-500">
+                        Ringkasan rencana mingguan.
+                    </p>
+                </div>
 
-        $weekDays = [
-            'Senin',
-            'Selasa',
-            'Rabu',
-            'Kamis',
-            'Jumat',
-            'Sabtu',
-            'Minggu'
-        ];
-    @endphp
+                <div class="space-y-3 text-sm">
+                    @foreach($weekDates as $week)
+                        <a href="{{ route('dashboard', ['date' => $week['date']]) }}"
+                           class="flex items-center justify-between rounded-xl border px-4 py-3
+                            {{ $week['is_selected']
+                                ? 'border-emerald-200 bg-emerald-50'
+                                : 'border-slate-200 bg-white hover:bg-slate-50'
+                            }}">
 
-    <div class="space-y-3 text-sm">
-        @foreach($weekDays as $dayName)
-            @php
-                $isSelectedDay = $selectedDayName === $dayName;
+                            <span class="{{ $week['is_selected'] ? 'font-semibold text-emerald-800' : 'text-slate-600' }}">
+                                {{ $week['day'] }}
+                            </span>
 
-                /*
-                    Sementara ambil data dari tanggal yang sedang dipilih.
-                    Jadi kalau tanggal 08 Juni 2026 ada 1 rencana,
-                    maka Senin akan tampil 1 rencana.
-                */
-                $planCount = $isSelectedDay ? $datePlans->count() : 0;
-            @endphp
+                            <span class="font-semibold text-emerald-700">
+                                {{ $week['count'] }} rencana
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
 
-            <div class="flex items-center justify-between rounded-xl border px-4 py-3
-                {{ $isSelectedDay
-                    ? 'border-emerald-200 bg-emerald-50'
-                    : 'border-slate-200 bg-white'
-                }}">
-
-                <span class="{{ $isSelectedDay ? 'font-semibold text-emerald-800' : 'text-slate-600' }}">
-                    {{ $dayName }}
-                </span>
-
-                <span class="font-semibold text-emerald-700">
-                    {{ $planCount }} rencana
-                </span>
+                <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
+                   class="mt-5 block rounded-xl border border-emerald-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
+                    Lihat semua rencana →
+                </a>
             </div>
-        @endforeach
-    </div>
-
-    <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
-       class="mt-5 block rounded-xl border border-emerald-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
-        Lihat semua rencana →
-    </a>
-</div>
         </section>
     </div>
 </x-app-layout>
