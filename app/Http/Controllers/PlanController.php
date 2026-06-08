@@ -27,7 +27,7 @@ class PlanController extends Controller
             ->locale('id')
             ->translatedFormat('F');
 
-        // Range minggu berdasarkan tanggal yang sedang dipilih
+        // Range minggu berdasarkan tanggal yang dipilih
         $startOfWeekCarbon = $currentDate->copy()->startOfWeek(Carbon::MONDAY);
         $endOfWeekCarbon = $currentDate->copy()->endOfWeek(Carbon::SUNDAY);
 
@@ -49,7 +49,7 @@ class PlanController extends Controller
             ->orderBy('jam_mulai')
             ->get();
 
-        // Semua rencana bulan ini, dipakai buat titik warna di kalender
+        // Semua rencana bulan ini untuk titik warna kalender
         $monthPlans = Plan::where('user_id', Auth::id())
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->orderBy('tanggal')
@@ -72,26 +72,17 @@ class PlanController extends Controller
             ->count();
 
         // Card: Terlambat
-        // Terlambat kalau statusnya Terlambat,
-        // atau tanggalnya sudah lewat tapi status masih belum selesai.
         $latePlansCount = Plan::where('user_id', Auth::id())
             ->where(function ($query) use ($today) {
                 $query->whereIn('status', ['Terlambat', 'terlambat'])
                     ->orWhere(function ($q) use ($today) {
                         $q->where('tanggal', '<', $today)
-                            ->whereIn('status', [
-                                'pending',
-                                'Belum dimulai',
-                                'Belum Dikerjakan',
-                                'Sedang Dikerjakan',
-                                null
-                            ]);
+                            ->whereNotIn('status', ['Selesai', 'selesai']);
                     });
             })
             ->count();
 
         // Data rencana minggu ini per hari
-        // Dipakai buat box "Rencana Minggu Ini"
         $weekDates = [];
 
         for ($i = 0; $i < 7; $i++) {
@@ -136,10 +127,12 @@ class PlanController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
+        $selectedDate = $plan->tanggal;
+
         $plan->delete();
 
         return redirect()
-            ->route('plans.index')
+            ->route('plans.index', ['tanggal' => $selectedDate])
             ->with('success', 'Rencana berhasil dihapus!');
     }
 
@@ -158,10 +151,7 @@ class PlanController extends Controller
             'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
-        // Status awal rencana.
-        // Jadi data baru tidak tampil "pending" lagi.
         $validated['status'] = 'Belum dimulai';
-
         $validated['user_id'] = Auth::id();
 
         Plan::create($validated);
@@ -195,7 +185,6 @@ class PlanController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Kalau status tidak dikirim dari form edit, status lama tetap aman.
         if (!isset($validated['status'])) {
             unset($validated['status']);
         }

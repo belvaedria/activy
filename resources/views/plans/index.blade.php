@@ -20,6 +20,8 @@
 
             $todayDate = now('Asia/Jakarta')->format('Y-m-d');
 
+            $plansByDate = ($monthPlans ?? collect())->groupBy('tanggal');
+
             $statusLabel = function ($status) {
                 return match($status) {
                     'pending' => 'Belum dimulai',
@@ -55,13 +57,13 @@
                 };
             };
 
-            $dotClass = function ($kategori) {
+            $dotColor = function ($kategori) {
                 return match($kategori) {
-                    'Kuliah' => 'bg-blue-500',
-                    'Organisasi' => 'bg-purple-500',
-                    'Personal' => 'bg-orange-500',
-                    'Sehat' => 'bg-green-500',
-                    default => 'bg-emerald-500',
+                    'Kuliah' => '#2563eb',
+                    'Organisasi' => '#7c3aed',
+                    'Personal' => '#f97316',
+                    'Sehat' => '#22c55e',
+                    default => '#10b981',
                 };
             };
         @endphp
@@ -71,11 +73,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
-                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <path d="M16 2v4M8 2v4M3 10h18"/>
-                            <path d="M9 15l2 2 4-4"/>
-                        </svg>
+                        📅
                     </div>
 
                     <div>
@@ -89,10 +87,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <path d="M16 2v4M8 2v4M3 10h18"/>
-                        </svg>
+                        🗓️
                     </div>
 
                     <div>
@@ -106,10 +101,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
-                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="9"/>
-                            <path d="M9 12l2 2 4-4"/>
-                        </svg>
+                        ✅
                     </div>
 
                     <div>
@@ -123,10 +115,7 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <div class="flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-orange-700">
-                        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="9"/>
-                            <path d="M12 7v5l3 2"/>
-                        </svg>
+                        ⏰
                     </div>
 
                     <div>
@@ -146,12 +135,7 @@
                 <div class="mb-5 flex items-start justify-between">
                     <div>
                         <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
-                            <span class="text-emerald-700">
-                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                    <path d="M16 2v4M8 2v4M3 10h18"/>
-                                </svg>
-                            </span>
+                            <span class="text-emerald-700">🗓️</span>
                             Kalender
                         </h3>
 
@@ -208,9 +192,7 @@
                             $isSelected = $selectedDate == $date;
                             $isToday = $date == $todayDate;
 
-                            $plansInDate = $monthPlans
-                                ->where('tanggal', $date)
-                                ->take(4);
+                            $plansInDate = $plansByDate->get($date, collect())->take(4);
                         @endphp
 
                         <a href="{{ route('plans.index', ['tanggal' => $date]) }}"
@@ -225,12 +207,8 @@
 
                             <div class="mt-2 flex min-h-[8px] items-center justify-center gap-1">
                                 @foreach($plansInDate as $planDot)
-                                    <span class="h-1.5 w-1.5 rounded-full {{ $dotClass($planDot->kategori) }}"></span>
+                                    <span style="display:inline-block; width:7px; height:7px; border-radius:9999px; background-color: {{ $dotColor($planDot->kategori) }};"></span>
                                 @endforeach
-
-                                @if($plansInDate->count() == 0 && $isToday)
-                                    <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
-                                @endif
                             </div>
                         </a>
                     @endfor
@@ -238,22 +216,22 @@
 
                 <div class="mt-5 flex flex-wrap gap-5 text-xs text-slate-500">
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#10b981;"></span>
                         Produktif
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#2563eb;"></span>
                         Kuliah
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#7c3aed;"></span>
                         Organisasi
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-orange-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#f97316;"></span>
                         Personal
                     </div>
                 </div>
@@ -266,12 +244,7 @@
                     <div class="mb-5 flex items-start justify-between">
                         <div>
                             <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
-                                <span class="text-emerald-700">
-                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                        <path d="M16 2v4M8 2v4M3 10h18"/>
-                                    </svg>
-                                </span>
+                                <span class="text-emerald-700">📅</span>
                                 Detail Tanggal
                             </h3>
 
@@ -293,7 +266,7 @@
                             <div class="rounded-xl border border-slate-200 bg-white px-4 py-3">
                                 <div class="flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
-                                        <span class="mt-2 h-2 w-2 rounded-full {{ $dotClass($plan->kategori) }}"></span>
+                                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; margin-top:8px; background-color: {{ $dotColor($plan->kategori) }};"></span>
 
                                         <div>
                                             <h4 class="font-semibold text-slate-950">
@@ -323,7 +296,8 @@
                                                 @js($plan->nama_rencana),
                                                 @js($plan->kategori),
                                                 @js($plan->jam_mulai),
-                                                @js($plan->jam_selesai)
+                                                @js($plan->jam_selesai),
+                                                @js($plan->status ?? 'Belum dimulai')
                                             )">
                                             ✏️
                                         </button>
@@ -348,11 +322,6 @@
                             </div>
                         @endforelse
                     </div>
-
-                    <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
-                       class="mt-4 block rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
-                        Lihat semua rencana hari ini →
-                    </a>
                 </div>
 
                 <!-- Rencana Minggu Ini -->
@@ -360,12 +329,7 @@
                     <div class="mb-5 flex items-start justify-between">
                         <div>
                             <h3 class="flex items-center gap-2 text-xl font-bold text-slate-950">
-                                <span class="text-emerald-700">
-                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                        <path d="M16 2v4M8 2v4M3 10h18"/>
-                                    </svg>
-                                </span>
+                                <span class="text-emerald-700">🗓️</span>
                                 Rencana Minggu Ini
                             </h3>
 
@@ -438,10 +402,7 @@
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
-                        <label for="nama_rencana" class="actify-label">
-                            Nama Rencana
-                        </label>
-
+                        <label for="nama_rencana" class="actify-label">Nama Rencana</label>
                         <input
                             id="nama_rencana"
                             type="text"
@@ -452,10 +413,7 @@
                     </div>
 
                     <div>
-                        <label for="kategori" class="actify-label">
-                            Kategori
-                        </label>
-
+                        <label for="kategori" class="actify-label">Kategori</label>
                         <select id="kategori" name="kategori" class="actify-input" required>
                             <option value="Produktif">Produktif</option>
                             <option value="Kuliah">Kuliah</option>
@@ -470,10 +428,7 @@
 
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
-                        <label for="jam_mulai" class="actify-label">
-                            Jam Mulai
-                        </label>
-
+                        <label for="jam_mulai" class="actify-label">Jam Mulai</label>
                         <input
                             id="jam_mulai"
                             type="time"
@@ -483,10 +438,7 @@
                     </div>
 
                     <div>
-                        <label for="jam_selesai" class="actify-label">
-                            Jam Selesai
-                        </label>
-
+                        <label for="jam_selesai" class="actify-label">Jam Selesai</label>
                         <input
                             id="jam_selesai"
                             type="time"
@@ -494,6 +446,16 @@
                             class="actify-input"
                             required>
                     </div>
+                </div>
+
+                <div id="statusEditWrapper" class="hidden">
+                    <label for="status" class="actify-label">Status</label>
+                    <select id="status" name="status" class="actify-input">
+                        <option value="Belum dimulai">Belum dimulai</option>
+                        <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="Terlambat">Terlambat</option>
+                    </select>
                 </div>
 
                 <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
@@ -516,20 +478,22 @@
             form.classList.remove('hidden');
 
             document.getElementById('formTitle').innerText = 'Tambah Rencana';
-            document.getElementById('planFormElement').action = '{{ route('plans.store') }}';
+            document.getElementById('planFormElement').action = "{{ route('plans.store') }}";
             document.getElementById('methodField').innerHTML = '';
 
             document.getElementById('nama_rencana').value = '';
             document.getElementById('kategori').value = 'Produktif';
-            document.getElementById('tanggal').value = '{{ $selectedDate }}';
+            document.getElementById('tanggal').value = "{{ $selectedDate }}";
             document.getElementById('jam_mulai').value = '';
             document.getElementById('jam_selesai').value = '';
+            document.getElementById('status').value = 'Belum dimulai';
+            document.getElementById('statusEditWrapper').classList.add('hidden');
             document.getElementById('submitButton').innerText = 'Simpan Rencana';
 
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function editPlan(id, nama, kategori, jamMulai, jamSelesai) {
+        function editPlan(id, nama, kategori, jamMulai, jamSelesai, status) {
             const form = document.getElementById('planForm');
 
             form.classList.remove('hidden');
@@ -540,9 +504,11 @@
 
             document.getElementById('nama_rencana').value = nama;
             document.getElementById('kategori').value = kategori;
-            document.getElementById('tanggal').value = '{{ $selectedDate }}';
+            document.getElementById('tanggal').value = "{{ $selectedDate }}";
             document.getElementById('jam_mulai').value = jamMulai;
             document.getElementById('jam_selesai').value = jamSelesai;
+            document.getElementById('status').value = status === 'pending' ? 'Belum dimulai' : status;
+            document.getElementById('statusEditWrapper').classList.remove('hidden');
             document.getElementById('submitButton').innerText = 'Update Rencana';
 
             form.scrollIntoView({ behavior: 'smooth', block: 'start' });
