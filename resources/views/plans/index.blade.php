@@ -284,10 +284,6 @@
                                             {{ $plan->kategori }}
                                         </span>
 
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusClass($plan->status ?? null) }}">
-                                            {{ $statusLabel($plan->status ?? null) }}
-                                        </span>
-
                                         <button
                                             type="button"
                                             class="text-sm"
@@ -296,8 +292,7 @@
                                                 @js($plan->nama_rencana),
                                                 @js($plan->kategori),
                                                 @js($plan->jam_mulai),
-                                                @js($plan->jam_selesai),
-                                                @js($plan->status ?? 'Belum dimulai')
+                                                @js($plan->jam_selesai)
                                             )">
                                             ✏️
                                         </button>

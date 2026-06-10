@@ -102,6 +102,9 @@
                             <th>Kategori</th>
                             <th>Tanggal</th>
                             <th>Durasi (Jam)</th>
+                            <th>Jam Mulai</th>
+                            <th>Jam Selesai</th>
+                            <th>Status</th>
                             <th class="text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -122,6 +125,13 @@
                                 </td>
                                 <td>{{ \Illuminate\Support\Carbon::parse($act->tanggal)->format('d M Y') }}</td>
                                 <td>{{ number_format((float) $act->durasi, 1) }} jam</td>
+                                <td>{{ \Illuminate\Support\Carbon::parse($act->jam_mulai)->format('H:i') }}</td>
+                                <td>{{ \Illuminate\Support\Carbon::parse($act->jam_selesai)->format('H:i') }}</td>
+                                <td>
+                                    <span class="actify-chip {{ $act->status === 'Tepat Waktu' ? 'actify-chip-tepat' : 'actify-chip-lambat' }}">
+                                        {{ $act->status }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="flex justify-end gap-2">
                                         <a href="{{ route('activities.edit', $act->id) }}" class="actify-btn actify-btn-blue px-3 py-1.5">Edit</a>

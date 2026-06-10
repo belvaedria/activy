@@ -135,14 +135,26 @@ public function recap()
             ->with('success', 'Aktivitas berhasil dihapus!');
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $plans = Plan::where('user_id', Auth::id())
             ->orderBy('tanggal', 'desc')
             ->orderBy('jam_mulai')
             ->get();
 
-        return view('activities.create', compact('plans'));
+        $selectedPlan = null;
+
+        if ($request->filled('plan_id')) {
+
+            $selectedPlan = Plan::where('_id', $request->plan_id)
+                ->where('user_id', Auth::id())
+                ->first();
+        }
+
+        return view(
+            'activities.create',
+            compact('plans', 'selectedPlan')
+        );
     }
 
     // POST /activities

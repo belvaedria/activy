@@ -120,111 +120,8 @@
             </div>
         </section>
 
-        <!-- Main Tracking Section -->
-        <section style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px;">
-            <!-- Rencana Hari Ini -->
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="mb-5 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-950">Rencana hari ini</h3>
-
-                    <a href="{{ route('plans.index', ['tanggal' => now('Asia/Jakarta')->format('Y-m-d')]) }}"
-                       class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
-                        Lihat semua →
-                    </a>
-                </div>
-
-                <div class="overflow-hidden rounded-xl border border-slate-200">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                            <tr>
-                                <th class="px-4 py-3">Nama Rencana</th>
-                                <th class="px-4 py-3">Kategori</th>
-                                <th class="px-4 py-3">Waktu</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y divide-slate-200">
-                            @forelse($todayPlans as $plan)
-                                <tr>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">
-                                        {{ $plan->nama_rencana }}
-                                    </td>
-
-                                    <td class="px-4 py-3">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($plan->kategori) }}">
-                                            {{ $plan->kategori }}
-                                        </span>
-                                    </td>
-
-                                    <td class="px-4 py-3 text-slate-600">
-                                        {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="px-4 py-6 text-center text-slate-500">
-                                        Tidak ada rencana untuk hari ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Aktivitas Hari Ini -->
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="mb-5 flex items-center justify-between">
-                    <h3 class="text-lg font-bold text-slate-950">Aktivitas hari ini</h3>
-
-                    <a href="{{ route('activities.index') }}"
-                       class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
-                        Lihat semua →
-                    </a>
-                </div>
-
-                <div class="overflow-hidden rounded-xl border border-slate-200">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                            <tr>
-                                <th class="px-4 py-3">Nama Aktivitas</th>
-                                <th class="px-4 py-3">Kategori</th>
-                                <th class="px-4 py-3">Durasi</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y divide-slate-200">
-                            @forelse($todayActivities as $activity)
-                                <tr>
-                                    <td class="px-4 py-3 font-semibold text-slate-900">
-                                        {{ $activity->nama_aktivitas }}
-                                    </td>
-
-                                    <td class="px-4 py-3">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($activity->kategori) }}">
-                                            {{ $activity->kategori }}
-                                        </span>
-                                    </td>
-
-                                    <td class="px-4 py-3 text-slate-600">
-                                        {{ $activity->durasi }} jam
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="px-4 py-6 text-center text-slate-500">
-                                        Belum ada aktivitas yang dicatat untuk hari ini.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Calendar, Detail, Weekly Plan Section -->
-        <section class="mt-6" style="display: grid; grid-template-columns: 1.3fr 0.8fr 0.8fr; gap: 24px; align-items: start;">
+        <!-- Calendar, Detail Section -->
+        <section class="mt-6" style="display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 24px; align-items: start;">
             <!-- Kalender -->
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="mb-5 flex items-start justify-between">
@@ -337,14 +234,12 @@
                 </div>
             </div>
 
-            <!-- Detail Tanggal -->
+            <!-- Checklist Hari Dipilih -->
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
                 <div class="mb-5">
-                    <h3 class="flex items-center gap-2 text-lg font-bold text-slate-950">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-                            📌
-                        </span>
-                        Detail Tanggal
+                    <h3 class="text-lg font-bold text-slate-950">
+                        Rencana Hari Ini
                     </h3>
 
                     <p class="mt-1 text-sm text-slate-500">
@@ -352,113 +247,261 @@
                     </p>
                 </div>
 
-                <!-- Rencana -->
-                <div class="mb-6">
-                    <h4 class="mb-3 text-sm font-bold text-slate-900">Rencana</h4>
+                <div class="space-y-3">
 
-                    <div class="space-y-3">
-                        @forelse($datePlans as $plan)
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                <div class="flex items-center justify-between gap-3">
-                                    <div class="flex items-start gap-3">
-                                        <span class="mt-2 block h-2 w-2 rounded-full {{ $categoryDotClass($plan->kategori) }}"></span>
+                    @forelse($datePlans as $plan)
 
-                                        <div>
-                                            <p class="font-semibold text-slate-900">
-                                                {{ $plan->nama_rencana }}
-                                            </p>
+                        @php
+                            $isCompleted = in_array(
+                                (string)$plan->_id,
+                                array_map('strval', $completedPlanIds)
+                            );
+                        @endphp
 
-                                            <p class="mt-1 text-xs text-slate-500">
-                                                {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
-                                            </p>
-                                        </div>
-                                    </div>
+                        <label
+                            class="
+                                flex items-center gap-3 rounded-xl border px-4 py-3 cursor-pointer
+                                {{ $isCompleted
+                                    ? 'border-slate-200 bg-slate-100 opacity-60'
+                                    : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                                }}
+                            "
+                        >
 
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($plan->kategori) }}">
-                                        {{ $plan->kategori }}
-                                    </span>
-                                </div>
+                        <input
+                            type="checkbox"
+                            class="h-4 w-4 rounded border-slate-300 text-emerald-600"
+                            {{ $isCompleted ? 'checked disabled' : '' }}
+
+                            @unless($isCompleted)
+                                onclick="openActivityModal(
+                                    '{{ $plan->_id }}',
+                                    '{{ $plan->nama_rencana }}',
+                                    '{{ $plan->kategori }}',
+                                    '{{ $plan->tanggal }}',
+                                    '{{ $plan->jam_mulai }}',
+                                    '{{ $plan->jam_selesai }}'
+                                )"
+                            @endunless
+                        >
+
+                            <div class="flex-1">
+
+                                <p
+                                    class="
+                                        font-medium
+                                        {{ $isCompleted
+                                            ? 'text-slate-500 line-through'
+                                            : 'text-slate-900'
+                                        }}
+                                    "
+                                >
+                                    {{ $plan->nama_rencana }}
+                                </p>
+
+                                <p class="text-xs text-slate-500">
+                                    {{ $plan->jam_mulai }} - {{ $plan->jam_selesai }}
+                                </p>
+
                             </div>
-                        @empty
-                            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-                                Tidak ada rencana pada tanggal ini.
-                            </div>
-                        @endforelse
-                    </div>
+
+                        </label>
+
+                    @empty
+
+                        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                            Tidak ada rencana pada tanggal ini.
+                        </div>
+
+                    @endforelse
+
                 </div>
 
-                <!-- Aktivitas -->
-                <div>
-                    <h4 class="mb-3 text-sm font-bold text-slate-900">Aktivitas</h4>
-
-                    <div class="space-y-3">
-                        @forelse($dateActivities as $activity)
-                            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                <div class="flex items-center justify-between gap-3">
-                                    <div>
-                                        <p class="font-semibold text-slate-900">
-                                            {{ $activity->nama_aktivitas }}
-                                        </p>
-
-                                        <p class="mt-1 text-xs text-slate-500">
-                                            Durasi {{ $activity->durasi }} jam
-                                        </p>
-                                    </div>
-
-                                    <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $categoryBadgeClass($activity->kategori) }}">
-                                        {{ $activity->kategori }}
-                                    </span>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-                                Tidak ada aktivitas pada tanggal ini.
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rencana Minggu Ini -->
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="mb-5">
-                    <h3 class="flex items-center gap-2 text-lg font-bold text-slate-950">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-600">
-                            🗓️
-                        </span>
-                        Rencana Minggu Ini
-                    </h3>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Ringkasan rencana mingguan.
-                    </p>
-                </div>
-
-                <div class="space-y-3 text-sm">
-                    @foreach($weekDates as $week)
-                        <a href="{{ route('dashboard', ['date' => $week['date']]) }}"
-                           class="flex items-center justify-between rounded-xl border px-4 py-3
-                            {{ $week['is_selected']
-                                ? 'border-emerald-200 bg-emerald-50'
-                                : 'border-slate-200 bg-white hover:bg-slate-50'
-                            }}">
-
-                            <span class="{{ $week['is_selected'] ? 'font-semibold text-emerald-800' : 'text-slate-600' }}">
-                                {{ $week['day'] }}
-                            </span>
-
-                            <span class="font-semibold text-emerald-700">
-                                {{ $week['count'] }} rencana
-                            </span>
-                        </a>
-                    @endforeach
-                </div>
-
-                <a href="{{ route('plans.index', ['tanggal' => $selectedDate]) }}"
-                   class="mt-5 block rounded-xl border border-emerald-200 px-4 py-3 text-center text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
-                    Lihat semua rencana →
-                </a>
             </div>
         </section>
     </div>
+
+    <!-- Modal Aktivitas -->
+    <div
+        id="activityModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40"
+    >
+        <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+            <h3
+                id="modalPlanName"
+                class="mb-5 text-lg font-bold text-slate-900"
+            >
+            </h3>
+
+            <form
+                action="{{ route('activities.store') }}"
+                method="POST"
+                id="activityForm"
+            >
+                @csrf
+
+                <input type="hidden" name="plan_id" id="modalPlanId">
+                <input type="hidden" name="nama_aktivitas" id="modalNama">
+                <input type="hidden" name="kategori" id="modalKategori">
+                <input type="hidden" name="tanggal" id="modalTanggal">
+                <input type="hidden" name="durasi" id="modalDurasi">
+                <input type="hidden" name="status" id="modalStatus">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">
+                        Jam Mulai
+                    </label>
+
+                    <input
+                        type="time"
+                        name="jam_mulai"
+                        id="modalJamMulai"
+                        class="actify-input"
+                        required
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">
+                        Jam Selesai
+                    </label>
+
+                    <input
+                        type="time"
+                        name="jam_selesai"
+                        id="modalJamSelesai"
+                        class="actify-input"
+                        required
+                    >
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-medium mb-2">
+                        Catatan
+                    </label>
+
+                    <textarea
+                        name="deskripsi"
+                        rows="3"
+                        class="actify-input"
+                    ></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+
+                    <button
+                        type="button"
+                        onclick="closeActivityModal()"
+                        class="actify-btn actify-btn-secondary"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        onclick="prepareActivityData()"
+                        class="actify-btn actify-btn-primary"
+                    >
+                        Simpan
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        let planStartTime = '';
+        let planEndTime = '';
+
+        function openActivityModal(
+            id,
+            nama,
+            kategori,
+            tanggal,
+            jamMulai,
+            jamSelesai
+        ) {
+            document
+                .getElementById('activityModal')
+                .classList
+                .remove('hidden');
+
+            document
+                .getElementById('activityModal')
+                .classList
+                .add('flex');
+
+            document.getElementById('modalPlanName').innerText = nama;
+
+            document.getElementById('modalPlanId').value = id;
+            document.getElementById('modalNama').value = nama;
+            document.getElementById('modalKategori').value = kategori;
+            document.getElementById('modalTanggal').value = tanggal;
+
+            planStartTime = jamMulai;
+            planEndTime = jamSelesai;
+        }
+
+        function closeActivityModal() {
+
+            document
+                .getElementById('activityModal')
+                .classList
+                .add('hidden');
+
+            document
+                .getElementById('activityModal')
+                .classList
+                .remove('flex');
+        }
+
+        function prepareActivityData() {
+
+            const start =
+                document.getElementById('modalJamMulai').value;
+
+            const end =
+                document.getElementById('modalJamSelesai').value;
+
+            const startMinutes =
+                parseTime(start);
+
+            const endMinutes =
+                parseTime(end);
+
+            const duration =
+                (endMinutes - startMinutes) / 60;
+
+            document
+                .getElementById('modalDurasi')
+                .value = duration.toFixed(1);
+
+            const planEnd =
+                parseTime(planEndTime);
+
+            let status = 'Tepat Waktu';
+
+            if (endMinutes > planEnd) {
+                status = 'Terlambat';
+            }
+
+            document
+                .getElementById('modalStatus')
+                .value = status;
+        }
+
+        function parseTime(time) {
+
+            const parts = time.split(':');
+
+            return (
+                parseInt(parts[0]) * 60 +
+                parseInt(parts[1])
+            );
+        }
+
+    </script>
 </x-app-layout>

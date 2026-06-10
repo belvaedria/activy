@@ -34,13 +34,6 @@ class DashboardController extends Controller
             ->endOfMonth()
             ->format('Y-m-d');
 
-        // Range minggu berdasarkan tanggal yang dipilih
-        $startOfWeekCarbon = $calendarDate->copy()->startOfWeek(Carbon::MONDAY);
-        $endOfWeekCarbon = $calendarDate->copy()->endOfWeek(Carbon::SUNDAY);
-
-        $startOfWeek = $startOfWeekCarbon->format('Y-m-d');
-        $endOfWeek = $endOfWeekCarbon->format('Y-m-d');
-
         // Aktivitas hari ini
         $todayActivities = Activity::where('user_id', $userId)
             ->where('tanggal', $today)
@@ -84,25 +77,10 @@ class DashboardController extends Controller
             ? round(($completedPlans / $todayPlans->count()) * 100)
             : 0;
 
-        // Rencana minggu ini per hari
-        $weekDates = [];
-
-        for ($i = 0; $i < 7; $i++) {
-            $date = $startOfWeekCarbon->copy()->addDays($i);
-            $dateString = $date->format('Y-m-d');
-
-            $count = Plan::where('user_id', $userId)
-                ->where('tanggal', $dateString)
-                ->count();
-
-            $weekDates[] = [
-                'date' => $dateString,
-                'day' => $date->locale('id')->translatedFormat('l'),
-                'short_day' => $date->locale('id')->translatedFormat('D'),
-                'count' => $count,
-                'is_selected' => $selectedDate === $dateString,
-            ];
-        }
+        $completedPlanIds = Activity::where('user_id', $userId)
+            ->whereNotNull('plan_id')
+            ->pluck('plan_id')
+            ->toArray();
 
         return view('dashboard', compact(
             'todayActivities',
@@ -117,9 +95,7 @@ class DashboardController extends Controller
             'daysInMonth',
             'firstDayOfWeek',
             'monthPlans',
-            'weekDates',
-            'startOfWeek',
-            'endOfWeek'
+            'completedPlanIds'
         ));
     }
 }

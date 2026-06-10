@@ -227,40 +227,6 @@
                         </div>
                     </div>
 
-                    <!-- Status Aktivitas -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <h3 class="mb-4 text-base font-bold text-slate-950">
-                            Status Aktivitas
-                        </h3>
-
-                        <div class="grid gap-5 md:grid-cols-2">
-                            <div>
-                                <label for="status" class="actify-label">
-                                    Status
-                                </label>
-
-                                <select id="status" name="status" class="actify-input">
-                                    <option value="Belum Dikerjakan" {{ old('status') === 'Belum Dikerjakan' ? 'selected' : '' }}>
-                                        Belum Dikerjakan
-                                    </option>
-                                    <option value="Sedang Dikerjakan" {{ old('status') === 'Sedang Dikerjakan' ? 'selected' : '' }}>
-                                        Sedang Dikerjakan
-                                    </option>
-                                    <option value="Selesai" {{ old('status') === 'Selesai' ? 'selected' : '' }}>
-                                        Selesai
-                                    </option>
-                                    <option value="Terlambat" {{ old('status') === 'Terlambat' ? 'selected' : '' }}>
-                                        Terlambat
-                                    </option>
-                                </select>
-
-                                <p class="mt-2 rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700">
-                                    Aktivitas dianggap belum selesai sampai pengguna menandai statusnya.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Button -->
                     <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
                         <button type="reset" class="actify-btn actify-btn-secondary">
