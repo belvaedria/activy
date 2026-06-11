@@ -57,7 +57,7 @@ public function recap()
     $completedPlans = $activities
         ->filter(function ($activity) {
             return !empty($activity->plan_id)
-                && in_array($activity->status, ['Selesai', 'selesai']);
+                && in_array($activity->status, ['Tepat Waktu', 'Selesai']);
         })
         ->pluck('plan_id')
         ->unique()
@@ -124,10 +124,12 @@ public function recap()
                 ->where('user_id', Auth::id())
                 ->first();
 
-            if ($plan) {
-                $plan->status = 'Belum dimulai';
-                $plan->save();
-            }
+        if ($plan) {
+            $plan->status = 'Belum dimulai';
+            $plan->keterlambatan_menit = 0;
+            $plan->overtime_menit = 0;
+            $plan->save();
+        }
         }
 
         return redirect()
@@ -183,7 +185,6 @@ public function recap()
             $validated['plan_id'] = null;
         }
 
-        $validated['status'] = $validated['status'] ?? 'Belum Dikerjakan';
         $validated['user_id'] = Auth::id();
 
         // Kalau aktivitas dari rencana, jangan bikin dobel.
@@ -205,7 +206,36 @@ public function recap()
                 ->first();
 
             if ($plan) {
-                $plan->status = $validated['status'];
+
+                $planStart = strtotime($plan->jam_mulai);
+                $planEnd = strtotime($plan->jam_selesai);
+
+                $actualStart = strtotime($validated['jam_mulai']);
+                $actualEnd = strtotime($validated['jam_selesai']);
+
+                // Telat mulai
+                $lateMinutes = max(
+                    0,
+                    round(($actualStart - $planStart) / 60)
+                );
+
+                // Overtime
+                $overtimeMinutes = max(
+                    0,
+                    round(($actualEnd - $planEnd) / 60)
+                );
+
+                // Simpan statistik
+                $plan->keterlambatan_menit = $lateMinutes;
+                $plan->overtime_menit = $overtimeMinutes;
+
+                // Status plan
+                if ($lateMinutes > 15) {
+                    $plan->status = 'Terlambat';
+                } else {
+                    $plan->status = 'Tepat Waktu';
+                }
+
                 $plan->save();
             }
         } else {
@@ -224,9 +254,16 @@ public function recap()
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        return view('activities.edit', compact('activity'));
-    }
+        $plans = Plan::where('user_id', Auth::id())
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('jam_mulai')
+            ->get();
 
+        return view(
+            'activities.edit',
+            compact('activity', 'plans')
+        );
+    }
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
@@ -252,8 +289,6 @@ public function recap()
             $validated['plan_id'] = null;
         }
 
-        $validated['status'] = $validated['status'] ?? 'Belum Dikerjakan';
-
         $activity = Activity::where('_id', $id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -271,6 +306,8 @@ public function recap()
 
             if ($oldPlan) {
                 $oldPlan->status = 'Belum dimulai';
+                $oldPlan->keterlambatan_menit = 0;
+                $oldPlan->overtime_menit = 0;
                 $oldPlan->save();
             }
         }
@@ -282,7 +319,36 @@ public function recap()
                 ->first();
 
             if ($plan) {
-                $plan->status = $validated['status'];
+
+                $planStart = strtotime($plan->jam_mulai);
+                $planEnd = strtotime($plan->jam_selesai);
+
+                $actualStart = strtotime($validated['jam_mulai']);
+                $actualEnd = strtotime($validated['jam_selesai']);
+
+                // Telat mulai
+                $lateMinutes = max(
+                    0,
+                    round(($actualStart - $planStart) / 60)
+                );
+
+                // Overtime
+                $overtimeMinutes = max(
+                    0,
+                    round(($actualEnd - $planEnd) / 60)
+                );
+
+                // Simpan statistik
+                $plan->keterlambatan_menit = $lateMinutes;
+                $plan->overtime_menit = $overtimeMinutes;
+
+                // Status plan
+                if ($lateMinutes > 15) {
+                    $plan->status = 'Terlambat';
+                } else {
+                    $plan->status = 'Tepat Waktu';
+                }
+
                 $plan->save();
             }
         }

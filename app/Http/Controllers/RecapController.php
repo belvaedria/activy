@@ -18,25 +18,11 @@ class RecapController extends Controller
         $endDate = $request->end_date
             ?? now('Asia/Jakarta')->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
 
-        $selectedCategory = $request->category;
-        $selectedStatus = $request->status;
-        $selectedPeriod = $request->period ?? 'mingguan';
-
         $activitiesQuery = Activity::where('user_id', Auth::id())
             ->whereBetween('tanggal', [$startDate, $endDate]);
 
         $plansQuery = Plan::where('user_id', Auth::id())
             ->whereBetween('tanggal', [$startDate, $endDate]);
-
-        if (!empty($selectedCategory)) {
-            $activitiesQuery->where('kategori', $selectedCategory);
-            $plansQuery->where('kategori', $selectedCategory);
-        }
-
-        if (!empty($selectedStatus)) {
-            $activitiesQuery->where('status', $selectedStatus);
-            $plansQuery->where('status', $selectedStatus);
-        }
 
         $activities = $activitiesQuery
             ->orderBy('tanggal', 'asc')
@@ -72,6 +58,13 @@ class RecapController extends Controller
             })
             ->values();
 
+        $attentionPlans = $plans
+            ->sortByDesc(function ($plan) {
+                return (int) ($plan->keterlambatan_menit ?? 0);
+            })
+            ->take(5)
+            ->values();
+
         $unplannedActivities = $activities
             ->filter(fn ($activity) => empty($activity->plan_id))
             ->values();
@@ -93,16 +86,53 @@ class RecapController extends Controller
             })
             ->count();
 
-        $statusDistribution = [
-            'Selesai' => $completedPlans,
-            'Belum Selesai' => $notFinishedPlans,
-            'Terlambat' => $latePlans,
-            'Sedang Dikerjakan' => $inProgressPlans,
-        ];
+        $totalPlannedMinutes = 0;
+        $totalPenaltyMinutes = 0;
 
-        $complianceRate = $totalPlans > 0
-            ? round(($completedPlans / $totalPlans) * 100)
-            : 0;
+        foreach ($plans as $plan) {
+
+            $planStart = strtotime($plan->jam_mulai);
+            $planEnd = strtotime($plan->jam_selesai);
+
+            $planDuration =
+                max(0, round(($planEnd - $planStart) / 60));
+
+            $totalPlannedMinutes += $planDuration;
+
+            $activityExists = $completedPlanIds
+                ->contains((string) $plan->_id);
+
+            if ($activityExists) {
+
+                $totalPenaltyMinutes +=
+                    (int) ($plan->keterlambatan_menit ?? 0);
+
+            } else {
+
+                $planDate = Carbon::parse($plan->tanggal);
+
+                if ($planDate->lt(today())) {
+
+                    $totalPenaltyMinutes +=
+                        $planDuration;
+                }
+            }
+        }
+
+        $totalLateMinutes = $plans->sum(function ($plan) {
+            return (int) ($plan->keterlambatan_menit ?? 0);
+        });
+
+        $complianceRate =
+            $totalPlannedMinutes > 0
+                ? round(
+                    max(
+                        0,
+                        (($totalPlannedMinutes - $totalPenaltyMinutes)
+                        / $totalPlannedMinutes) * 100
+                    )
+                )
+                : 0;
 
         $totalDuration = $activities->sum(function ($activity) {
             return (float) ($activity->durasi ?? 0);
@@ -114,7 +144,15 @@ class RecapController extends Controller
 
         $categoryDistribution = $activities
             ->groupBy('kategori')
-            ->map(fn ($group) => $group->count())
+            ->map(function ($group) {
+
+                return round(
+                    $group->sum(function ($activity) {
+                        return (float) ($activity->durasi ?? 0);
+                    }),
+                    1
+                );
+            })
             ->toArray();
 
         $topCategory = count($categoryDistribution) > 0
@@ -136,8 +174,38 @@ class RecapController extends Controller
             'actual' => [],
         ];
 
+        $complianceTrend = [
+            'labels' => [],
+            'values' => [],
+        ];
+
         $start = Carbon::parse($startDate);
         $end = Carbon::parse($endDate);
+
+        $dateRangeDays =
+            $start->diffInDays($end) + 1;
+
+        $aggregationMode = 'daily';
+
+        if ($dateRangeDays > 60) {
+
+            $aggregationMode = 'monthly';
+
+        } elseif ($dateRangeDays > 14) {
+
+            $aggregationMode = 'weekly';
+        }
+
+        $planRealizationTrend = [
+            'labels' => [],
+            'planned' => [],
+            'realized' => [],
+        ];
+
+        $adaptiveComplianceTrend = [
+            'labels' => [],
+            'values' => [],
+        ];
 
         while ($start->lte($end)) {
             $dateString = $start->format('Y-m-d');
@@ -163,10 +231,233 @@ class RecapController extends Controller
                     return (float) ($activity->durasi ?? 0);
                 });
 
+            // =========================
+            // Kepatuhan Harian
+            // =========================
+
+            $dayPlans = $plans->where('tanggal', $dateString);
+
+            $plannedMinutes = 0;
+            $penaltyMinutes = 0;
+
+            foreach ($dayPlans as $plan) {
+
+                $planStart = strtotime($plan->jam_mulai);
+                $planEnd = strtotime($plan->jam_selesai);
+
+                $planDuration =
+                    max(0, round(($planEnd - $planStart) / 60));
+
+                $plannedMinutes += $planDuration;
+
+                $activityExists =
+                    $completedPlanIds->contains((string) $plan->_id);
+
+                if ($activityExists) {
+
+                    $penaltyMinutes +=
+                        (int) ($plan->keterlambatan_menit ?? 0);
+
+                } else {
+
+                    $planDate = Carbon::parse($plan->tanggal);
+
+                    if ($planDate->lt(today())) {
+
+                        $penaltyMinutes += $planDuration;
+                    }
+                }
+            }
+
+            $dailyCompliance =
+                $plannedMinutes > 0
+                    ? round(
+                        max(
+                            0,
+                            (($plannedMinutes - $penaltyMinutes)
+                            / $plannedMinutes) * 100
+                        )
+                    )
+                    : 0;
+
+            $complianceTrend['labels'][] =
+                Carbon::parse($dateString)
+                    ->locale('id')
+                    ->translatedFormat('d M');
+
+            $complianceTrend['values'][] =
+                $dailyCompliance;
+
             $dailyComparison['planned'][] = $plannedDuration;
             $dailyComparison['actual'][] = $actualDuration;
 
             $start->addDay();
+        }
+
+        if ($aggregationMode === 'daily') {
+
+            $cursor = Carbon::parse($startDate);
+
+            while ($cursor->lte($end)) {
+
+                $dateString = $cursor->format('Y-m-d');
+
+                $dayPlans =
+                    $plans->where('tanggal', $dateString);
+
+                $dayActivities =
+                    $activities->where('tanggal', $dateString);
+
+                $planRealizationTrend['labels'][] =
+                    $cursor->locale('id')
+                        ->translatedFormat('d M');
+
+                $planRealizationTrend['planned'][] =
+                    $dayPlans->count();
+
+                $planRealizationTrend['realized'][] =
+                    $dayActivities
+                        ->whereNotNull('plan_id')
+                        ->count();
+
+                $cursor->addDay();
+            }
+
+            $adaptiveComplianceTrend =
+                $complianceTrend;
+        } elseif ($aggregationMode === 'weekly') {
+
+            $cursor = Carbon::parse($startDate);
+
+            while ($cursor->lte($end)) {
+
+                $weekStart = $cursor->copy();
+
+                $weekEnd = $cursor->copy()->addDays(6);
+
+                if ($weekEnd->gt($end)) {
+                    $weekEnd = $end->copy();
+                }
+
+                $label =
+                    $weekStart->format('d M')
+                    . ' - '
+                    . $weekEnd->format('d M');
+
+                $weekPlans = $plans
+                    ->filter(function ($plan) use ($weekStart, $weekEnd) {
+
+                        $date = Carbon::parse($plan->tanggal);
+
+                        return $date->between(
+                            $weekStart,
+                            $weekEnd
+                        );
+                    });
+
+                $weekActivities = $activities
+                    ->filter(function ($activity) use ($weekStart, $weekEnd) {
+
+                        $date = Carbon::parse($activity->tanggal);
+
+                        return $date->between(
+                            $weekStart,
+                            $weekEnd
+                        );
+                    });
+
+                $planRealizationTrend['labels'][] =
+                    $label;
+
+                $planRealizationTrend['planned'][] =
+                    $weekPlans->count();
+
+                $planRealizationTrend['realized'][] =
+                    $weekActivities
+                        ->whereNotNull('plan_id')
+                        ->count();
+
+                $plannedMinutes = 0;
+                $penaltyMinutes = 0;
+
+                foreach ($weekPlans as $plan) {
+
+                    $duration =
+                        max(
+                            0,
+                            round(
+                                (
+                                    strtotime($plan->jam_selesai)
+                                    -
+                                    strtotime($plan->jam_mulai)
+                                ) / 60
+                            )
+                        );
+
+                    $plannedMinutes += $duration;
+
+                    $activityExists =
+                        $completedPlanIds
+                            ->contains((string) $plan->_id);
+
+                    if ($activityExists) {
+
+                        $penaltyMinutes +=
+                            (int) ($plan->keterlambatan_menit ?? 0);
+
+                    } else {
+
+                        if (
+                            Carbon::parse($plan->tanggal)
+                            ->lt(today())
+                        ) {
+
+                            $penaltyMinutes +=
+                                $duration;
+                        }
+                    }
+                }
+
+                $compliance =
+                    $plannedMinutes > 0
+                        ? round(
+                            (
+                                ($plannedMinutes - $penaltyMinutes)
+                                / $plannedMinutes
+                            ) * 100
+                        )
+                        : 0;
+
+                $adaptiveComplianceTrend['labels'][] =
+                    $label;
+
+                $adaptiveComplianceTrend['values'][] =
+                    $compliance;
+
+                $cursor->addWeek();
+            }
+        }
+
+        $bestDay = '-';
+        $worstDay = '-';
+
+        if (!empty($complianceTrend['values'])) {
+
+            $bestIndex = array_keys(
+                $complianceTrend['values'],
+                max($complianceTrend['values'])
+            )[0];
+
+            $worstIndex = array_keys(
+                $complianceTrend['values'],
+                min($complianceTrend['values'])
+            )[0];
+
+            $bestDay =
+                $complianceTrend['labels'][$bestIndex] ?? '-';
+
+            $worstDay =
+                $complianceTrend['labels'][$worstIndex] ?? '-';
         }
 
         return view('activities.recap', compact(
@@ -174,19 +465,27 @@ class RecapController extends Controller
             'plans',
             'startDate',
             'endDate',
-            'selectedCategory',
-            'selectedStatus',
-            'selectedPeriod',
             'completedPlans',
             'complianceRate',
             'averageDuration',
             'topCategory',
             'categoryDistribution',
             'planComparison',
-            'statusDistribution',
             'unfulfilledPlans',
             'unplannedActivities',
-            'dailyComparison'
+            'dailyComparison',
+            'totalLateMinutes',
+            'complianceTrend',
+            'attentionPlans',
+            'bestDay',
+            'worstDay',
+            'totalDuration',
+            'planRealizationTrend',
+            'adaptiveComplianceTrend',
+            'latePlans',
+            'inProgressPlans',
+            'notFinishedPlans',
+
         ));
     }
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RecapController;
 
 Route::get(
     '/dashboard',
@@ -23,8 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/activities', [ActivityController::class, 'index'])->name('activities.index');
 
     // Menampilkan halaman rekapitulasi
-    Route::get('/rekapitulasi', [ActivityController::class, 'recap'])->name('activities.recap');
-    
+    Route::get('/rekapitulasi',
+        [RecapController::class, 'index'])
+        ->name('activities.recap');
+
     // Menghapus aktivitas
     Route::delete('/activities/{id}', [ActivityController::class, 'destroy'])->name('activities.destroy');
     

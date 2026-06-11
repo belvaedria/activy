@@ -17,5 +17,8 @@ class Plan extends Model
         'jam_mulai',
         'jam_selesai',
         'status',
+
+        'keterlambatan_menit',
+        'overtime_menit',
     ];
 }

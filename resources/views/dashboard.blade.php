@@ -132,10 +132,6 @@
                             </span>
                             Kalender
                         </h3>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            {{ $currentCalendar->locale('id')->translatedFormat('F Y') }}
-                        </p>
                     </div>
 
                     <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
@@ -346,7 +342,6 @@
                 <input type="hidden" name="kategori" id="modalKategori">
                 <input type="hidden" name="tanggal" id="modalTanggal">
                 <input type="hidden" name="durasi" id="modalDurasi">
-                <input type="hidden" name="status" id="modalStatus">
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">
@@ -478,19 +473,6 @@
             document
                 .getElementById('modalDurasi')
                 .value = duration.toFixed(1);
-
-            const planEnd =
-                parseTime(planEndTime);
-
-            let status = 'Tepat Waktu';
-
-            if (endMinutes > planEnd) {
-                status = 'Terlambat';
-            }
-
-            document
-                .getElementById('modalStatus')
-                .value = status;
         }
 
         function parseTime(time) {

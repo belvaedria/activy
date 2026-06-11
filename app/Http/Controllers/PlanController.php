@@ -68,7 +68,7 @@ class PlanController extends Controller
 
         // Card: Selesai
         $completedPlansCount = Plan::where('user_id', Auth::id())
-            ->whereIn('status', ['Selesai', 'selesai'])
+            ->whereIn('status', ['Terlambat', 'Tepat Waktu'])
             ->count();
 
         // Card: Terlambat

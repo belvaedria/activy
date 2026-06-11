@@ -301,16 +301,6 @@
                                 <p id="summary_kategori" class="mt-1 text-slate-950">Belum dipilih</p>
                             </div>
                         </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-700">
-                                ●
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Status</p>
-                                <p id="summary_status" class="mt-1 text-slate-950">Belum Dikerjakan</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -339,14 +329,12 @@
         const jamMulaiInput = document.getElementById('jam_mulai');
         const jamSelesaiInput = document.getElementById('jam_selesai_rencana');
         const durasiInput = document.getElementById('durasi');
-        const statusInput = document.getElementById('status');
 
         const summaryTanggal = document.getElementById('summary_tanggal');
         const summaryJamMulai = document.getElementById('summary_jam_mulai');
         const summaryJamSelesai = document.getElementById('summary_jam_selesai');
         const summaryDurasi = document.getElementById('summary_durasi');
         const summaryKategori = document.getElementById('summary_kategori');
-        const summaryStatus = document.getElementById('summary_status');
 
         function calculateDuration() {
             const startTime = jamMulaiInput.value;
@@ -404,7 +392,6 @@
             summaryJamSelesai.textContent = jamSelesaiInput.value || 'Belum diisi';
             summaryDurasi.textContent = durasiInput.value ? durasiInput.value + ' jam' : 'Belum diisi';
             summaryKategori.textContent = kategoriInput.value || 'Belum dipilih';
-            summaryStatus.textContent = statusInput.value || 'Belum Dikerjakan';
         }
 
         planSelect.addEventListener('change', function () {
@@ -433,7 +420,6 @@
         jamMulaiInput.addEventListener('input', calculateDuration);
         jamSelesaiInput.addEventListener('input', calculateDuration);
         durasiInput.addEventListener('input', calculateEndTime);
-        statusInput.addEventListener('change', updateSummary);
 
         updateSummary();
     </script>

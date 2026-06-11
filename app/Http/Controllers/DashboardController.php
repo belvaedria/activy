@@ -73,9 +73,52 @@ class DashboardController extends Controller
             ->count();
 
         // Tingkat kepatuhan
-        $complianceRate = $todayPlans->count() > 0
-            ? round(($completedPlans / $todayPlans->count()) * 100)
-            : 0;
+        $totalPlannedMinutes = 0;
+        $totalPenaltyMinutes = 0;
+
+        foreach ($todayPlans as $plan) {
+
+            $planStart = strtotime($plan->jam_mulai);
+            $planEnd = strtotime($plan->jam_selesai);
+
+            $planDuration =
+                max(0, round(($planEnd - $planStart) / 60));
+
+            $totalPlannedMinutes += $planDuration;
+
+            $activityExists = Activity::where('user_id', $userId)
+                ->where('plan_id', (string) $plan->_id)
+                ->exists();
+
+            if ($activityExists) {
+
+                $totalPenaltyMinutes +=
+                    (int) ($plan->keterlambatan_menit ?? 0);
+
+            } else {
+
+                $planDate =
+                    Carbon::parse($plan->tanggal);
+
+                if ($planDate->lt(today())) {
+
+                    $totalPenaltyMinutes +=
+                        $planDuration;
+                }
+            }
+        }
+
+        $complianceRate =
+            $totalPlannedMinutes > 0
+                ? round(
+                    max(
+                        0,
+                        (($totalPlannedMinutes - $totalPenaltyMinutes)
+                        / $totalPlannedMinutes)
+                        * 100
+                    )
+                )
+                : 0;
 
         $completedPlanIds = Activity::where('user_id', $userId)
             ->whereNotNull('plan_id')

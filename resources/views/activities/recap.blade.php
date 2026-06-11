@@ -72,7 +72,7 @@
         <!-- Filter -->
         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <form method="GET" action="{{ route('activities.recap') }}">
-                <div style="display: grid; grid-template-columns: 1.6fr 1fr 1fr 0.9fr 0.75fr; gap: 16px; align-items: end;">
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end;">
 
                     <div>
                         <label class="mb-2 block text-sm font-semibold text-slate-500">
@@ -95,58 +95,6 @@
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-semibold text-slate-500">
-                            Kategori
-                        </label>
-
-                        <select
-                            name="category"
-                            class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-emerald-500 focus:ring-emerald-500">
-                            <option value="">Semua Kategori</option>
-                            <option value="Produktif">Produktif</option>
-                            <option value="Kuliah">Kuliah</option>
-                            <option value="Organisasi">Organisasi</option>
-                            <option value="Personal">Personal</option>
-                            <option value="Sehat">Sehat</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-slate-500">
-                            Status
-                        </label>
-
-                        <select
-                            name="status"
-                            class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 focus:border-emerald-500 focus:ring-emerald-500">
-                            <option value="">Semua Status</option>
-                            <option value="Selesai">Selesai</option>
-                            <option value="Belum Selesai">Belum Selesai</option>
-                            <option value="Terlambat">Terlambat</option>
-                            <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-slate-500">
-                            Periode
-                        </label>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr;"
-                             class="rounded-xl border border-slate-200 bg-slate-50 p-1">
-                            <label class="cursor-pointer rounded-lg px-3 py-2 text-center text-sm font-semibold text-slate-600">
-                                <input type="radio" name="period" value="harian" class="hidden">
-                                Harian
-                            </label>
-
-                            <label class="cursor-pointer rounded-lg bg-emerald-50 px-3 py-2 text-center text-sm font-semibold text-emerald-700">
-                                <input type="radio" name="period" value="mingguan" class="hidden" checked>
-                                Mingguan
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
                         <button
                             type="submit"
                             class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-700">
@@ -159,7 +107,7 @@
         </section>
 
         <!-- Statistic Cards -->
-        <section style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px;">
+        <section style="display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex items-center gap-4">
                     <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
@@ -168,7 +116,7 @@
                     <div>
                         <p class="text-sm font-semibold text-slate-500">Total Rencana</p>
                         <p class="text-2xl font-bold text-slate-950">{{ $totalPlans }}</p>
-                        <p class="text-xs text-slate-500">aktivitas</p>
+                        <p class="text-xs text-slate-500">rencana</p>
                     </div>
                 </div>
             </div>
@@ -179,9 +127,9 @@
                         ✅
                     </span>
                     <div>
-                        <p class="text-sm font-semibold text-slate-500">Aktivitas Selesai</p>
-                        <p class="text-2xl font-bold text-slate-950">{{ $donePlans }}</p>
-                        <p class="text-xs text-slate-500">aktivitas</p>
+                        <p class="text-sm font-semibold text-slate-500">Rencana Terpenuhi</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $completedPlans }}</p>
+                        <p class="text-xs text-slate-500">rencana</p>
                     </div>
                 </div>
             </div>
@@ -192,9 +140,9 @@
                         🕘
                     </span>
                     <div>
-                        <p class="text-sm font-semibold text-slate-500">Belum Selesai</p>
-                        <p class="text-2xl font-bold text-slate-950">{{ max($unfinishedCount - $lateCount, 0) }}</p>
-                        <p class="text-xs text-slate-500">aktivitas</p>
+                        <p class="text-sm font-semibold text-slate-500">Tingkat Kepatuhan</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $complianceRate }}%</p>
+                        <p class="text-xs text-slate-500">dari rencana</p>
                     </div>
                 </div>
             </div>
@@ -205,35 +153,9 @@
                         ⏰
                     </span>
                     <div>
-                        <p class="text-sm font-semibold text-slate-500">Terlambat</p>
-                        <p class="text-2xl font-bold text-slate-950">{{ $lateCount }}</p>
-                        <p class="text-xs text-slate-500">aktivitas</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="flex items-center gap-4">
-                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
-                        🕒
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-500">Total Durasi Aktual</p>
-                        <p class="text-2xl font-bold text-slate-950">{{ $totalActualDuration }} jam</p>
-                        <p class="text-xs text-slate-500">total waktu</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                <div class="flex items-center gap-4">
-                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                        📈
-                    </span>
-                    <div>
-                        <p class="text-sm font-semibold text-slate-500">Produktivitas</p>
-                        <p class="text-2xl font-bold text-slate-950">{{ $complianceRate }}%</p>
-                        <p class="text-xs text-slate-500">dari target rencana</p>
+                        <p class="text-sm font-semibold text-slate-500">Total Keterlambatan</p>
+                        <p class="text-2xl font-bold text-slate-950">{{ $totalLateMinutes }} menit</p>
+                        <p class="text-xs text-slate-500">dari seluruh durasi rencana</p>
                     </div>
                 </div>
             </div>
@@ -243,10 +165,10 @@
         <section style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 class="text-lg font-bold text-slate-950">
-                    Perbandingan Rencana vs Aktual
+                    Rencana vs Realisasi
                 </h3>
                 <p class="mt-1 text-sm text-slate-500">
-                    Perbandingan jumlah rencana dan realisasi aktivitas.
+                    Perbandingan rencana dan realisasi aktivitas.
                 </p>
 
                 <div class="mt-4 h-80">
@@ -256,47 +178,15 @@
 
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 class="text-lg font-bold text-slate-950">
-                    Distribusi Status Aktivitas
+                    Tren Kepatuhan
                 </h3>
+
                 <p class="mt-1 text-sm text-slate-500">
-                    Proporsi aktivitas berdasarkan status penyelesaian.
+                    Perkembangan tingkat kepatuhan selama periode yang dipilih.
                 </p>
 
-                <div class="mt-4" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="h-72">
-                        <canvas id="statusChart"></canvas>
-                    </div>
-
-                    <div class="flex flex-col justify-center space-y-4">
-                        @php
-                            $statusTotal = array_sum($statusDistribution);
-                        @endphp
-
-                        @foreach($statusDistribution as $statusName => $statusCount)
-                            @php
-                                $percent = $statusTotal > 0 ? round(($statusCount / $statusTotal) * 100) : 0;
-
-                                $dotColor = match($statusName) {
-                                    'Selesai' => 'bg-emerald-500',
-                                    'Belum Selesai' => 'bg-yellow-500',
-                                    'Terlambat' => 'bg-red-500',
-                                    default => 'bg-blue-500',
-                                };
-                            @endphp
-
-                            <div class="flex items-center justify-between gap-4 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <span class="h-3 w-3 rounded-full {{ $dotColor }}"></span>
-                                    <span class="font-medium text-slate-600">{{ $statusName }}</span>
-                                </div>
-
-                                <div class="text-right text-slate-600">
-                                    <span class="font-semibold">{{ $statusCount }}</span>
-                                    <span class="ml-2">({{ $percent }}%)</span>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                <div class="mt-4 h-80">
+                    <canvas id="complianceChart"></canvas>
                 </div>
             </div>
         </section>
@@ -305,10 +195,10 @@
         <section style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 class="text-lg font-bold text-slate-950">
-                    Produktivitas per Kategori
+                    Distribusi Waktu per Kategori
                 </h3>
                 <p class="mt-1 text-sm text-slate-500">
-                    Persentase penyelesaian aktivitas per kategori.
+                    Distribusi durasi aktual berdasarkan kategori aktivitas.
                 </p>
 
                 <div class="mt-5 space-y-4">
@@ -343,35 +233,25 @@
 
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 class="text-lg font-bold text-slate-950">
-                    Aktivitas Terlambat / Perlu Perhatian
+                    Perlu Perhatian
                 </h3>
                 <p class="mt-1 text-sm text-slate-500">
-                    Aktivitas yang melewati target atau belum diselesaikan.
+                    Rencana yang belum direalisasikan atau memiliki keterlambatan tertinggi.
                 </p>
 
                 <div class="mt-4 overflow-hidden rounded-xl border border-slate-200">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                             <tr>
-                                <th class="px-4 py-3">Nama Aktivitas</th>
+                                <th class="px-4 py-3">Nama Rencana</th>
                                 <th class="px-4 py-3">Kategori</th>
-                                <th class="px-4 py-3">Target Selesai</th>
-                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Tanggal</th>
+                                <th class="px-4 py-3">Keterlambatan (menit)</th>
                             </tr>
                         </thead>
 
                         <tbody class="divide-y divide-slate-200">
-                            @forelse($unfulfilledPlans as $plan)
-                                @php
-                                    $status = $plan->status ?? 'Belum Selesai';
-
-                                    $statusClass = match($status) {
-                                        'Terlambat' => 'bg-red-50 text-red-700',
-                                        'Selesai' => 'bg-emerald-50 text-emerald-700',
-                                        'Sedang Dikerjakan' => 'bg-blue-50 text-blue-700',
-                                        default => 'bg-yellow-50 text-yellow-700',
-                                    };
-                                @endphp
+                            @forelse($attentionPlans as $plan)
 
                                 <tr>
                                     <td class="px-4 py-3 font-semibold text-slate-900">
@@ -387,9 +267,7 @@
                                     </td>
 
                                     <td class="px-4 py-3">
-                                        <span class="rounded-full px-3 py-1 text-xs font-semibold {{ $statusClass }}">
-                                            {{ $status }}
-                                        </span>
+                                        {{ $plan->keterlambatan_menit ?? 0 }} menit
                                     </td>
                                 </tr>
                             @empty
@@ -408,10 +286,10 @@
         <!-- Weekly Summary -->
         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h3 class="text-lg font-bold text-slate-950">
-                Ringkasan Mingguan
+                Insight
             </h3>
             <p class="mt-1 text-sm text-slate-500">
-                Insight utama dari rencana dan realisasi aktivitas minggu ini.
+                Insight utama dari periode yang dipilih.
             </p>
 
             <div class="mt-5" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px;">
@@ -420,9 +298,11 @@
                         ☆
                     </span>
                     <div>
-                        <p class="text-sm text-slate-500">Hari paling produktif</p>
-                        <p class="text-xl font-bold text-slate-950">-</p>
-                        <p class="text-xs text-slate-500">{{ $totalActualDuration }} jam aktual</p>
+                        <p class="text-sm text-slate-500">Hari Terbaik</p>
+                        <p class="text-xl font-bold text-slate-950">{{ $bestDay }}</p>
+                        <p class="text-xs text-slate-500">
+                            kepatuhan tertinggi
+                        </p>
                     </div>
                 </div>
 
@@ -433,7 +313,9 @@
                     <div>
                         <p class="text-sm text-slate-500">Kategori dominan</p>
                         <p class="text-xl font-bold text-slate-950">{{ $topCategory }}</p>
-                        <p class="text-xs text-slate-500">kategori paling banyak</p>
+                        <p class="text-xs text-slate-500">
+                            alokasi waktu terbesar
+                        </p>
                     </div>
                 </div>
 
@@ -442,8 +324,17 @@
                         ↗
                     </span>
                     <div>
-                        <p class="text-xl font-bold text-slate-950">{{ $donePlans }} aktivitas</p>
-                        <p class="text-xs text-slate-500">berhasil direalisasikan</p>
+                        <p class="text-sm text-slate-500">
+                            Hari Terburuk
+                        </p>
+
+                        <p class="text-xl font-bold text-slate-950">
+                            {{ $worstDay }}
+                        </p>
+
+                        <p class="text-xs text-slate-500">
+                            kepatuhan terendah
+                        </p>
                     </div>
                 </div>
 
@@ -464,34 +355,29 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        const planData = @json($planComparison);
-        const statusData = @json($statusDistribution);
+        const planData = @json($planRealizationTrend);
+        const complianceTrend = @json($adaptiveComplianceTrend);
 
         new Chart(document.getElementById('planChart'), {
             type: 'bar',
             data: {
-                labels: ['Rencana', 'Terlaksana'],
-                datasets: [{
-                    label: 'Jumlah',
-                    data: [
-                        planData.rencana ?? 0,
-                        planData.terlaksana ?? 0
-                    ],
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.25)',
-                        'rgba(5, 150, 105, 0.9)'
-                    ],
-                    borderRadius: 8
-                }]
+                labels: planData.labels,
+                datasets: [
+                    {
+                        label: 'Rencana',
+                        data: planData.planned,
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Realisasi',
+                        data: planData.realized,
+                        borderWidth: 1
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
                 scales: {
                     y: {
                         beginAtZero: true
@@ -500,31 +386,36 @@
             }
         });
 
-        new Chart(document.getElementById('statusChart'), {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(statusData),
-                datasets: [{
-                    data: Object.values(statusData),
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.85)',
-                        'rgba(245, 158, 11, 0.85)',
-                        'rgba(239, 68, 68, 0.85)',
-                        'rgba(59, 130, 246, 0.85)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: {
-                    legend: {
-                        display: false
+        new Chart(
+            document.getElementById('complianceChart'),
+            {
+                type: 'line',
+                data: {
+                    labels: complianceTrend.labels,
+                    datasets: [{
+                        label: 'Kepatuhan (%)',
+                        data: complianceTrend.values,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
                     }
                 }
             }
-        });
+        );
     </script>
 </x-app-layout>
