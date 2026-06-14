@@ -16,28 +16,21 @@
             $prevMonth = $currentCalendar->copy()->subMonth()->format('Y-m-d');
             $nextMonth = $currentCalendar->copy()->addMonth()->format('Y-m-d');
 
-            // Penting: ini biar titik warna muncul sesuai tanggal.
-            $plansByDate = $monthPlans->groupBy(function ($plan) {
+            $plansByDate = ($monthPlans ?? collect())->groupBy(function ($plan) {
                 return \Carbon\Carbon::parse($plan->tanggal)->format('Y-m-d');
             });
 
-            $categoryBadgeClass = function ($category) {
-                return match($category) {
-                    'Kuliah' => 'bg-blue-50 text-blue-700',
-                    'Organisasi' => 'bg-purple-50 text-purple-700',
-                    'Personal' => 'bg-orange-50 text-orange-700',
-                    'Sehat' => 'bg-green-50 text-green-700',
-                    default => 'bg-emerald-50 text-emerald-700',
-                };
-            };
+            $spontaneousActivitiesByDate = ($monthSpontaneousActivities ?? collect())->groupBy(function ($activity) {
+                return \Carbon\Carbon::parse($activity->tanggal)->format('Y-m-d');
+            });
 
-            $categoryDotClass = function ($category) {
+            $dotColor = function ($category) {
                 return match($category) {
-                    'Kuliah' => 'bg-blue-500',
-                    'Organisasi' => 'bg-purple-500',
-                    'Personal' => 'bg-orange-500',
-                    'Sehat' => 'bg-green-500',
-                    default => 'bg-emerald-500',
+                    'Kuliah' => '#2563eb',
+                    'Organisasi' => '#7c3aed',
+                    'Personal' => '#f97316',
+                    'Sehat' => '#38bdf8',
+                    default => '#10b981',
                 };
             };
         @endphp
@@ -47,7 +40,7 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <p class="text-sm font-semibold text-emerald-700">
-                        Selamat datang, {{ Auth::user()->name }} 👋
+                        Selamat datang, {{ Auth::user()->name }}
                     </p>
 
                     <h1 class="mt-2 text-2xl font-bold leading-tight text-slate-950 sm:text-3xl">
@@ -180,6 +173,11 @@
                             $date = sprintf('%04d-%02d-%02d', $currentYear, $currentMonth, $day);
                             $isSelected = $selectedDate == $date;
                             $plansOnDate = $plansByDate->get($date, collect())->take(4);
+                            $activitiesOnDate = $spontaneousActivitiesByDate->get($date, collect())->take(4);
+                            $calendarDots = $plansOnDate
+                                ->map(fn ($plan) => $plan->kategori)
+                                ->concat($activitiesOnDate->map(fn ($activity) => $activity->kategori))
+                                ->take(4);
                         @endphp
 
                         <a href="{{ route('dashboard', ['date' => $date]) }}"
@@ -193,8 +191,8 @@
                             <span>{{ $day }}</span>
 
                             <div class="mt-2 flex min-h-[8px] items-center justify-center gap-1">
-                                @foreach($plansOnDate as $planDot)
-                                    <span class="block h-2 w-2 rounded-full {{ $categoryDotClass($planDot->kategori) }}"></span>
+                                @foreach($calendarDots as $dotCategory)
+                                    <span style="display:inline-block; width:7px; height:7px; border-radius:9999px; background-color: {{ $dotColor($dotCategory) }};"></span>
                                 @endforeach
                             </div>
                         </a>
@@ -204,27 +202,27 @@
                 <!-- Legend -->
                 <div class="mt-5 flex flex-wrap gap-5 text-xs text-slate-500">
                     <div class="flex items-center gap-2">
-                        <span class="block h-2 w-2 rounded-full bg-emerald-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#10b981;"></span>
                         Produktif
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="block h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#2563eb;"></span>
                         Kuliah
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="block h-2 w-2 rounded-full bg-purple-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#7c3aed;"></span>
                         Organisasi
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="block h-2 w-2 rounded-full bg-orange-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#f97316;"></span>
                         Personal
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <span class="block h-2 w-2 rounded-full bg-green-500"></span>
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:9999px; background-color:#38bdf8;"></span>
                         Sehat
                     </div>
                 </div>

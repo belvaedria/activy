@@ -322,13 +322,6 @@
                                 {{ \Carbon\Carbon::parse($endOfWeek)->locale('id')->translatedFormat('d M Y') }}
                             </p>
                         </div>
-
-                        <button
-                            type="button"
-                            onclick="toggleForm()"
-                            class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50">
-                            Tambah Rencana
-                        </button>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">

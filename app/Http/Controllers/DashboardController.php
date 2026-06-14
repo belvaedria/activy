@@ -15,7 +15,8 @@ class DashboardController extends Controller
 
         $today = now('Asia/Jakarta')->format('Y-m-d');
 
-        $selectedDate = request('date') ?? $today;
+        $selectedDate = Carbon::parse(request('date', $today), 'Asia/Jakarta')
+            ->format('Y-m-d');
         $calendarDate = Carbon::parse($selectedDate);
 
         $currentMonth = $calendarDate->month;
@@ -65,59 +66,36 @@ class DashboardController extends Controller
             ->orderBy('jam_mulai')
             ->get();
 
-        // Rencana terpenuhi dihitung dari aktivitas yang punya plan_id
-        $completedPlans = $todayActivities
+        // Aktivitas spontan bulan ini untuk titik warna kalender
+        $monthSpontaneousActivities = Activity::where('user_id', $userId)
+            ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
+            ->where(function ($query) {
+                $query->whereNull('plan_id')
+                    ->orWhere('plan_id', '');
+            })
+            ->orderBy('tanggal')
+            ->orderBy('jam_mulai')
+            ->orderBy('created_at')
+            ->get();
+
+        $completedTodayPlanIds = $todayActivities
             ->whereNotNull('plan_id')
             ->pluck('plan_id')
+            ->filter()
+            ->map(fn ($id) => (string) $id)
             ->unique()
+            ->values();
+
+        // Rencana terpenuhi dihitung dari aktivitas yang punya plan_id
+        $completedPlans = $todayPlans
+            ->filter(function ($plan) use ($completedTodayPlanIds) {
+                return $completedTodayPlanIds->contains((string) $plan->_id);
+            })
             ->count();
 
-        // Tingkat kepatuhan
-        $totalPlannedMinutes = 0;
-        $totalPenaltyMinutes = 0;
-
-        foreach ($todayPlans as $plan) {
-
-            $planStart = strtotime($plan->jam_mulai);
-            $planEnd = strtotime($plan->jam_selesai);
-
-            $planDuration =
-                max(0, round(($planEnd - $planStart) / 60));
-
-            $totalPlannedMinutes += $planDuration;
-
-            $activityExists = Activity::where('user_id', $userId)
-                ->where('plan_id', (string) $plan->_id)
-                ->exists();
-
-            if ($activityExists) {
-
-                $totalPenaltyMinutes +=
-                    (int) ($plan->keterlambatan_menit ?? 0);
-
-            } else {
-
-                $planDate =
-                    Carbon::parse($plan->tanggal);
-
-                if ($planDate->lt(today())) {
-
-                    $totalPenaltyMinutes +=
-                        $planDuration;
-                }
-            }
-        }
-
         $complianceRate =
-            $totalPlannedMinutes > 0
-                ? round(
-                    max(
-                        0,
-                        (($totalPlannedMinutes - $totalPenaltyMinutes)
-                        / $totalPlannedMinutes)
-                        * 100
-                    )
-                )
+            $todayPlans->count() > 0
+                ? round(($completedPlans / $todayPlans->count()) * 100)
                 : 0;
 
         $completedPlanIds = Activity::where('user_id', $userId)
@@ -138,6 +116,7 @@ class DashboardController extends Controller
             'daysInMonth',
             'firstDayOfWeek',
             'monthPlans',
+            'monthSpontaneousActivities',
             'completedPlanIds'
         ));
     }

@@ -73,13 +73,7 @@ class PlanController extends Controller
 
         // Card: Terlambat
         $latePlansCount = Plan::where('user_id', Auth::id())
-            ->where(function ($query) use ($today) {
-                $query->whereIn('status', ['Terlambat', 'terlambat'])
-                    ->orWhere(function ($q) use ($today) {
-                        $q->where('tanggal', '<', $today)
-                            ->whereNotIn('status', ['Selesai', 'selesai']);
-                    });
-            })
+            ->whereIn('status', ['Terlambat', 'terlambat'])
             ->count();
 
         // Data rencana minggu ini per hari

@@ -44,8 +44,7 @@ class RecapController extends Controller
 
         $completedPlans = $plans
             ->filter(function ($plan) use ($completedPlanIds) {
-                return ($plan->status ?? '') === 'Selesai'
-                    || $completedPlanIds->contains((string) $plan->_id);
+                return $completedPlanIds->contains((string) $plan->_id);
             })
             ->count();
 
@@ -86,52 +85,13 @@ class RecapController extends Controller
             })
             ->count();
 
-        $totalPlannedMinutes = 0;
-        $totalPenaltyMinutes = 0;
-
-        foreach ($plans as $plan) {
-
-            $planStart = strtotime($plan->jam_mulai);
-            $planEnd = strtotime($plan->jam_selesai);
-
-            $planDuration =
-                max(0, round(($planEnd - $planStart) / 60));
-
-            $totalPlannedMinutes += $planDuration;
-
-            $activityExists = $completedPlanIds
-                ->contains((string) $plan->_id);
-
-            if ($activityExists) {
-
-                $totalPenaltyMinutes +=
-                    (int) ($plan->keterlambatan_menit ?? 0);
-
-            } else {
-
-                $planDate = Carbon::parse($plan->tanggal);
-
-                if ($planDate->lt(today())) {
-
-                    $totalPenaltyMinutes +=
-                        $planDuration;
-                }
-            }
-        }
-
         $totalLateMinutes = $plans->sum(function ($plan) {
             return (int) ($plan->keterlambatan_menit ?? 0);
         });
 
         $complianceRate =
-            $totalPlannedMinutes > 0
-                ? round(
-                    max(
-                        0,
-                        (($totalPlannedMinutes - $totalPenaltyMinutes)
-                        / $totalPlannedMinutes) * 100
-                    )
-                )
+            $totalPlans > 0
+                ? round(($completedPlans / $totalPlans) * 100)
                 : 0;
 
         $totalDuration = $activities->sum(function ($activity) {
@@ -237,47 +197,15 @@ class RecapController extends Controller
 
             $dayPlans = $plans->where('tanggal', $dateString);
 
-            $plannedMinutes = 0;
-            $penaltyMinutes = 0;
-
-            foreach ($dayPlans as $plan) {
-
-                $planStart = strtotime($plan->jam_mulai);
-                $planEnd = strtotime($plan->jam_selesai);
-
-                $planDuration =
-                    max(0, round(($planEnd - $planStart) / 60));
-
-                $plannedMinutes += $planDuration;
-
-                $activityExists =
-                    $completedPlanIds->contains((string) $plan->_id);
-
-                if ($activityExists) {
-
-                    $penaltyMinutes +=
-                        (int) ($plan->keterlambatan_menit ?? 0);
-
-                } else {
-
-                    $planDate = Carbon::parse($plan->tanggal);
-
-                    if ($planDate->lt(today())) {
-
-                        $penaltyMinutes += $planDuration;
-                    }
-                }
-            }
+            $realizedPlans = $dayPlans
+                ->filter(function ($plan) use ($completedPlanIds) {
+                    return $completedPlanIds->contains((string) $plan->_id);
+                })
+                ->count();
 
             $dailyCompliance =
-                $plannedMinutes > 0
-                    ? round(
-                        max(
-                            0,
-                            (($plannedMinutes - $penaltyMinutes)
-                            / $plannedMinutes) * 100
-                        )
-                    )
+                $dayPlans->count() > 0
+                    ? round(($realizedPlans / $dayPlans->count()) * 100, 1)
                     : 0;
 
             $complianceTrend['labels'][] =
@@ -377,55 +305,15 @@ class RecapController extends Controller
                         ->whereNotNull('plan_id')
                         ->count();
 
-                $plannedMinutes = 0;
-                $penaltyMinutes = 0;
-
-                foreach ($weekPlans as $plan) {
-
-                    $duration =
-                        max(
-                            0,
-                            round(
-                                (
-                                    strtotime($plan->jam_selesai)
-                                    -
-                                    strtotime($plan->jam_mulai)
-                                ) / 60
-                            )
-                        );
-
-                    $plannedMinutes += $duration;
-
-                    $activityExists =
-                        $completedPlanIds
-                            ->contains((string) $plan->_id);
-
-                    if ($activityExists) {
-
-                        $penaltyMinutes +=
-                            (int) ($plan->keterlambatan_menit ?? 0);
-
-                    } else {
-
-                        if (
-                            Carbon::parse($plan->tanggal)
-                            ->lt(today())
-                        ) {
-
-                            $penaltyMinutes +=
-                                $duration;
-                        }
-                    }
-                }
+                $realizedPlans = $weekPlans
+                    ->filter(function ($plan) use ($completedPlanIds) {
+                        return $completedPlanIds->contains((string) $plan->_id);
+                    })
+                    ->count();
 
                 $compliance =
-                    $plannedMinutes > 0
-                        ? round(
-                            (
-                                ($plannedMinutes - $penaltyMinutes)
-                                / $plannedMinutes
-                            ) * 100
-                        )
+                    $weekPlans->count() > 0
+                        ? round(($realizedPlans / $weekPlans->count()) * 100, 1)
                         : 0;
 
                 $adaptiveComplianceTrend['labels'][] =

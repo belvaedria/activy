@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="actify-page">
-        <div style="display: grid; grid-template-columns: 1.4fr 0.6fr; gap: 24px; align-items: start;">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start;">
 
             <!-- Form Tambah Aktivitas -->
             <section class="actify-panel p-5 sm:p-6">
@@ -243,81 +243,6 @@
                     </div>
                 </form>
             </section>
-
-            <!-- Ringkasan Aktivitas -->
-            <aside class="space-y-5">
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 class="mb-5 text-lg font-bold text-slate-950">
-                        Ringkasan Aktivitas
-                    </h3>
-
-                    <div class="space-y-5 text-sm">
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                                📅
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Tanggal</p>
-                                <p id="summary_tanggal" class="mt-1 text-slate-950">Belum dipilih</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                                🕘
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Jam Mulai</p>
-                                <p id="summary_jam_mulai" class="mt-1 text-slate-950">Belum diisi</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                                🏁
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Jam Selesai</p>
-                                <p id="summary_jam_selesai" class="mt-1 text-slate-950">Belum diisi</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-700">
-                                ⏱️
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Durasi</p>
-                                <p id="summary_durasi" class="mt-1 text-slate-950">Belum diisi</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
-                                🏷️
-                            </div>
-                            <div>
-                                <p class="font-semibold text-slate-600">Kategori</p>
-                                <p id="summary_kategori" class="mt-1 text-slate-950">Belum dipilih</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 class="mb-4 text-lg font-bold text-slate-950">
-                        Informasi
-                    </h3>
-
-                    <div class="rounded-xl bg-blue-50 p-4 text-sm leading-6 text-slate-700">
-                        <ul class="list-disc space-y-2 pl-5">
-                            <li>Jam mulai dan jam selesai digunakan untuk melihat kesesuaian rencana.</li>
-                            <li>Durasi otomatis dihitung dari selisih jam mulai dan jam selesai.</li>
-                            <li>Durasi tetap bisa diedit manual jika diperlukan.</li>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
         </div>
     </div>
 
@@ -330,18 +255,11 @@
         const jamSelesaiInput = document.getElementById('jam_selesai_rencana');
         const durasiInput = document.getElementById('durasi');
 
-        const summaryTanggal = document.getElementById('summary_tanggal');
-        const summaryJamMulai = document.getElementById('summary_jam_mulai');
-        const summaryJamSelesai = document.getElementById('summary_jam_selesai');
-        const summaryDurasi = document.getElementById('summary_durasi');
-        const summaryKategori = document.getElementById('summary_kategori');
-
         function calculateDuration() {
             const startTime = jamMulaiInput.value;
             const endTime = jamSelesaiInput.value;
 
             if (!startTime || !endTime) {
-                updateSummary();
                 return;
             }
 
@@ -360,8 +278,6 @@
             if (durationHours > 0) {
                 durasiInput.value = durationHours.toFixed(1);
             }
-
-            updateSummary();
         }
 
         function calculateEndTime() {
@@ -369,7 +285,6 @@
             const duration = parseFloat(durasiInput.value);
 
             if (!startTime || isNaN(duration)) {
-                updateSummary();
                 return;
             }
 
@@ -382,16 +297,6 @@
             jamSelesaiInput.value =
                 String(endHours).padStart(2, '0') + ':' +
                 String(endMinutes).padStart(2, '0');
-
-            updateSummary();
-        }
-
-        function updateSummary() {
-            summaryTanggal.textContent = tanggalInput.value || 'Belum dipilih';
-            summaryJamMulai.textContent = jamMulaiInput.value || 'Belum diisi';
-            summaryJamSelesai.textContent = jamSelesaiInput.value || 'Belum diisi';
-            summaryDurasi.textContent = durasiInput.value ? durasiInput.value + ' jam' : 'Belum diisi';
-            summaryKategori.textContent = kategoriInput.value || 'Belum dipilih';
         }
 
         planSelect.addEventListener('change', function () {
@@ -412,15 +317,10 @@
             }
 
             calculateDuration();
-            updateSummary();
         });
 
-        tanggalInput.addEventListener('input', updateSummary);
-        kategoriInput.addEventListener('change', updateSummary);
         jamMulaiInput.addEventListener('input', calculateDuration);
         jamSelesaiInput.addEventListener('input', calculateDuration);
         durasiInput.addEventListener('input', calculateEndTime);
-
-        updateSummary();
     </script>
 </x-app-layout>
